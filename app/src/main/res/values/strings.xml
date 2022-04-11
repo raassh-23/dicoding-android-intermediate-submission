@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Dicoding Story App</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="welcome">Welcome to Story App</string>
+    <string name="go_to_register_btn">Go to register</string>
+    <string name="login_btn">Login</string>
+    <string name="email_validation_message">Email is invalid</string>
+    <string name="password_validation_message">Password must have at least 6 characters</string>
+    <string name="login_screen_message">Please login first or register a new account</string>
+    <string name="go_to_login_btn">Go to login</string>
+    <string name="register_btn">Register</string>
+    <string name="name_hint">Name</string>
+    <string name="name_validation_message">Name cannot be empty</string>
 </resources>
