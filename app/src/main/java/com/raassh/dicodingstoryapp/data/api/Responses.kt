@@ -1,4 +1,4 @@
-package com.raassh.dicodingstoryapp.api
+package com.raassh.dicodingstoryapp.data.api
 
 import com.google.gson.annotations.SerializedName
 

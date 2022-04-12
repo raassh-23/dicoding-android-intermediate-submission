@@ -65,16 +65,18 @@ class PasswordEditText : EditTextWithValidation, View.OnTouchListener {
         }
 
         if (isButtonTouched) {
+            val curSelection = selectionEnd
+
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     transformationMethod = HideReturnsTransformationMethod.getInstance()
-                    setSelection(length())
+                    setSelection(curSelection)
                     return true
                 }
 
                 MotionEvent.ACTION_UP -> {
                     transformationMethod = PasswordTransformationMethod.getInstance()
-                    setSelection(length())
+                    setSelection(curSelection)
                     return true
                 }
             }

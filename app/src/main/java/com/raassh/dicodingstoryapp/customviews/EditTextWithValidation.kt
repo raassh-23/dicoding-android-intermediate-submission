@@ -45,12 +45,21 @@ open class EditTextWithValidation : AppCompatEditText {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (inputValidation?.validate(s.toString()) ?: true) {
-                    error = null
-                } else {
-                    error = inputValidation?.errorMessage ?: ""
-                }
+                validateInput()
             }
         })
+    }
+
+    fun validateInput(): Boolean {
+        val input = text.toString()
+        val isValid = inputValidation?.validate(input) ?: true
+
+        error = if (isValid) {
+            null
+        } else {
+            inputValidation?.errorMessage ?: ""
+        }
+
+        return isValid
     }
 }

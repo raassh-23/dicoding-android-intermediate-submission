@@ -1,4 +1,4 @@
-package com.raassh.dicodingstoryapp.api
+package com.raassh.dicodingstoryapp.data.api
 
 import com.raassh.dicodingstoryapp.BuildConfig
 import okhttp3.OkHttpClient
@@ -22,7 +22,7 @@ class ApiConfig {
                 .build()
 
             val retrofit = Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
+                .baseUrl("https://story-api.dicoding.dev/v1/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build()

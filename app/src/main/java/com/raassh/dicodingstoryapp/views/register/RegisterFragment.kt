@@ -1,18 +1,25 @@
 package com.raassh.dicodingstoryapp.views.register
 
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Patterns
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.core.DataStore
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
+import com.raassh.dicodingstoryapp.data.SessionPreferences
 import com.raassh.dicodingstoryapp.databinding.LoginFragmentBinding
 import com.raassh.dicodingstoryapp.databinding.RegisterFragmentBinding
+import com.raassh.dicodingstoryapp.views.SharedViewModel
+import com.raassh.dicodingstoryapp.views.dataStore
 import com.raassh.dicodingstoryapp.views.login.LoginViewModel
 
 class RegisterFragment : Fragment() {
@@ -63,6 +70,21 @@ class RegisterFragment : Fragment() {
 
                 override fun validate(input: String) = input.length >= 6
             })
+
+            register.setOnClickListener {
+                // note to self:
+                // doing it like this will validate all input
+                // instead of stopping after the first invalid
+                val isNameValid = nameInput.validateInput()
+                val isEmailValid = emailInput.validateInput()
+                val isPasswordValid = passwordInput.validateInput()
+
+                if (!isNameValid || !isEmailValid || !isPasswordValid) {
+                    return@setOnClickListener
+                }
+
+                Toast.makeText(context, "daftar", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

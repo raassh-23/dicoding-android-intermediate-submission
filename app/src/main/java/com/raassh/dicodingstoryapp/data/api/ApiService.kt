@@ -1,19 +1,22 @@
-package com.raassh.dicodingstoryapp.api
+package com.raassh.dicodingstoryapp.data.api
 
 import retrofit2.Call
 import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface ApiService {
-    @POST("/register")
+    @FormUrlEncoded
+    @POST("register")
     fun register(
         @Field("name") name: String,
         @Field("email") email: String,
         @Field("password") password: String
     ): Call<GenericResponse>
 
-    @POST("/login")
-    fun register(
+    @FormUrlEncoded
+    @POST("login")
+    fun login(
         @Field("email") email: String,
         @Field("password") password: String
     ): Call<LoginResponse>
