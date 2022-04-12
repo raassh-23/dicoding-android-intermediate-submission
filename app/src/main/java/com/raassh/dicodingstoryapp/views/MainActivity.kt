@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.raassh.dicodingstoryapp.R
@@ -19,8 +18,8 @@ import com.raassh.dicodingstoryapp.databinding.ActivityMainBinding
 internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "session")
 
 class MainActivity : AppCompatActivity() {
-    private val viewModel by viewModels<SharedViewModel> {
-        SharedViewModel.Factory(SessionPreferences.getInstance(dataStore))
+    private val viewModel by viewModels<MainActivityViewModel> {
+        MainActivityViewModel.Factory(SessionPreferences.getInstance(dataStore))
     }
 
     private lateinit var binding: ActivityMainBinding

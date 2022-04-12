@@ -15,8 +15,8 @@ class StoryDetailFragment : Fragment() {
     private var _binding: StoryDetailFragmentBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 

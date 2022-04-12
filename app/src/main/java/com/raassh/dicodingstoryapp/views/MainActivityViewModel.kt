@@ -1,11 +1,10 @@
 package com.raassh.dicodingstoryapp.views
 
-import android.app.Application
 import androidx.lifecycle.*
 import com.raassh.dicodingstoryapp.data.SessionPreferences
 import kotlinx.coroutines.launch
 
-class SharedViewModel(private val pref: SessionPreferences) : ViewModel() {
+class MainActivityViewModel(private val pref: SessionPreferences) : ViewModel() {
     fun getToken(): LiveData<String> {
         return pref.getSavedToken().asLiveData()
     }
@@ -19,7 +18,7 @@ class SharedViewModel(private val pref: SessionPreferences) : ViewModel() {
     @Suppress("UNCHECKED_CAST")
     class Factory(private val pref: SessionPreferences) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return SharedViewModel(pref) as T
+            return MainActivityViewModel(pref) as T
         }
     }
 }

@@ -46,6 +46,9 @@
         <action
             android:id="@+id/action_storiesFragment_to_storyDetailFragment"
             app:destination="@id/storyDetailFragment" />
+        <action
+            android:id="@+id/action_storiesFragment_to_newStoryFragment"
+            app:destination="@id/newStoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/storyDetailFragment"
@@ -56,4 +59,22 @@
             android:name="story"
             app:argType="com.raassh.dicodingstoryapp.data.api.ListStoryItem" />
     </fragment>
+    <fragment
+        android:id="@+id/newStoryFragment"
+        android:name="com.raassh.dicodingstoryapp.views.newstory.NewStoryFragment"
+        android:label="new_story_fragment"
+        tools:layout="@layout/new_story_fragment" >
+        <argument
+            android:name="token"
+            android:defaultValue=""
+            app:argType="string" />
+        <action
+            android:id="@+id/action_newStoryFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.raassh.dicodingstoryapp.views.cameraview.CameraFragment"
+        android:label="fragment_camera"
+        tools:layout="@layout/fragment_camera" />
 </navigation>

@@ -27,4 +27,14 @@
     <string name="loading_data">Loading....</string>
     <string name="no_data">There is no data</string>
     <string name="retry">Retry</string>
+    <string name="add_btn_content_description">Add new story</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="add_new">Add story</string>
+    <string name="desc_validation_message">Description cannot be empty</string>
+    <string name="chooser_title">Choose a image</string>
+    <string name="description_hint">Description</string>
+    <string name="permission_denied">Permission request is denied</string>
 </resources>

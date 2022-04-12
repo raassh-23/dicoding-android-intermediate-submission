@@ -17,7 +17,7 @@ import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.data.SessionPreferences
 import com.raassh.dicodingstoryapp.databinding.LoginFragmentBinding
-import com.raassh.dicodingstoryapp.views.SharedViewModel
+import com.raassh.dicodingstoryapp.views.MainActivityViewModel
 import com.raassh.dicodingstoryapp.views.dataStore
 import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
 import com.raassh.dicodingstoryapp.misc.showSnackbar
@@ -25,15 +25,15 @@ import com.raassh.dicodingstoryapp.misc.visibility
 
 class LoginFragment : Fragment() {
     private val viewModel by viewModels<LoginViewModel>()
-    private val sharedViewModel by activityViewModels<SharedViewModel> {
-        SharedViewModel.Factory(SessionPreferences.getInstance(context?.dataStore as DataStore))
+    private val sharedViewModel by activityViewModels<MainActivityViewModel> {
+        MainActivityViewModel.Factory(SessionPreferences.getInstance(context?.dataStore as DataStore))
     }
 
     private var _binding: LoginFragmentBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
         (activity as AppCompatActivity).supportActionBar?.hide()
     }
 

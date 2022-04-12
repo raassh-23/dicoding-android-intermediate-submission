@@ -18,6 +18,7 @@ import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.StoriesFragmentBinding
 import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.visibility
+import com.raassh.dicodingstoryapp.views.login.LoginFragmentDirections
 
 class StoriesFragment : Fragment() {
     private var token = ""
@@ -67,6 +68,14 @@ class StoriesFragment : Fragment() {
                         layoutManager.orientation
                     )
                 )
+            }
+
+            addNew.setOnClickListener {
+                val navigateAction = StoriesFragmentDirections
+                    .actionStoriesFragmentToNewStoryFragment()
+                navigateAction.token = token
+
+                view.findNavController().navigate(navigateAction)
             }
         }
 
