@@ -8,26 +8,26 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.raassh.dicodingstoryapp.views.login.LoginFragment"
-        android:label="login_fragment"
-        tools:layout="@layout/login_fragment" >
+        android:label="Login"
+        tools:layout="@layout/login_fragment">
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
         <argument
             android:name="email"
-            app:argType="string"
-            android:defaultValue=""/>
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_loginFragment_to_storiesFragment"
             app:destination="@id/storiesFragment"
             app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.raassh.dicodingstoryapp.views.register.RegisterFragment"
-        android:label="register_fragment"
-        tools:layout="@layout/register_fragment" >
+        android:label="Register"
+        tools:layout="@layout/register_fragment">
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
             app:destination="@id/loginFragment"
@@ -37,11 +37,23 @@
     <fragment
         android:id="@+id/storiesFragment"
         android:name="com.raassh.dicodingstoryapp.views.stories.StoriesFragment"
-        android:label="stories_fragment"
-        tools:layout="@layout/stories_fragment" >
+        android:label="Stories"
+        tools:layout="@layout/stories_fragment">
         <argument
             android:name="token"
-            app:argType="string"
-            android:defaultValue=""/>
+            android:defaultValue=""
+            app:argType="string" />
+        <action
+            android:id="@+id/action_storiesFragment_to_storyDetailFragment"
+            app:destination="@id/storyDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/storyDetailFragment"
+        android:name="com.raassh.dicodingstoryapp.views.storydetail.StoryDetailFragment"
+        android:label="Story Detail"
+        tools:layout="@layout/story_detail_fragment">
+        <argument
+            android:name="story"
+            app:argType="com.raassh.dicodingstoryapp.data.api.ListStoryItem" />
     </fragment>
 </navigation>

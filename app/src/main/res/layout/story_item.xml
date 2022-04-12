@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_launcher_background"
-        android:contentDescription="@string/story_description" />
+        android:contentDescription="@string/stories_content_description" />
 
     <TextView
         android:id="@+id/story_user"

@@ -1,14 +1,15 @@
 package com.raassh.dicodingstoryapp.views
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.raassh.dicodingstoryapp.R
@@ -36,17 +37,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val navController = findNavController(binding.container.id)
+
         when(item.itemId) {
             R.id.logout -> {
                 viewModel.saveToken("")
 
                 // ref: https://github.com/android/architecture-components-samples/issues/767
-                val navController = findNavController(binding.container.id)
                 val navHostFragment = supportFragmentManager.findFragmentById(binding.container.id) as NavHostFragment
                 val inflater = navHostFragment.navController.navInflater
                 val graph = inflater.inflate(R.navigation.main_navigation)
                 graph.setStartDestination(R.id.loginFragment)
                 navController.graph = graph
+            }
+            android.R.id.home -> {
+                navController.navigateUp()
             }
         }
 

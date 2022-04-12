@@ -20,7 +20,7 @@ class StoriesViewModel(private val token: String) : ViewModel() {
     val stories: LiveData<List<ListStoryItem>> = _stories
 
     private val _isLoading = MutableLiveData<Boolean>()
-    private val isLoading: LiveData<Boolean> = _isLoading
+    val isLoading: LiveData<Boolean> = _isLoading
 
     private val _error = MutableLiveData<Event<String>>()
     val error: LiveData<Event<String>> = _error
@@ -29,7 +29,7 @@ class StoriesViewModel(private val token: String) : ViewModel() {
         getAllStories()
     }
 
-    private fun getAllStories() {
+    fun getAllStories() {
         _isLoading.value = true
 
         ApiConfig.getApiService().getAllStories("Bearer $token")

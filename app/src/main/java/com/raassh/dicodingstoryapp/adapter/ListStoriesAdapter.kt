@@ -35,7 +35,7 @@ class ListStoriesAdapter(private val listStories: ArrayList<ListStoryItem>)
             binding.apply {
                 storyImage.loadImage(story.photoUrl)
                 storyImage.contentDescription = itemView.context.getString(
-                    R.string.story_description, story.name
+                    R.string.stories_content_description, story.name
                 )
                 storyUser.text = itemView.context.getString(R.string.stories_user, story.name)
             }

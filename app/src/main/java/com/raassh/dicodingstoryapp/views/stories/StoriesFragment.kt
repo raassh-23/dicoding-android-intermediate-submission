@@ -8,13 +8,16 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.adapter.ListStoriesAdapter
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.StoriesFragmentBinding
 import com.raassh.dicodingstoryapp.misc.showSnackbar
+import com.raassh.dicodingstoryapp.misc.visibility
 
 class StoriesFragment : Fragment() {
     private var token = ""
@@ -26,9 +29,12 @@ class StoriesFragment : Fragment() {
     private var _binding: StoriesFragmentBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.show()
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            show()
+            setDisplayHomeAsUpEnabled(false)
+        }
     }
 
     override fun onCreateView(
@@ -64,16 +70,43 @@ class StoriesFragment : Fragment() {
             }
         }
 
-        viewModel.stories.observe(viewLifecycleOwner) {
-            binding.apply {
-                listStory.adapter = ListStoriesAdapter(ArrayList(it)).apply {
-                    setOnItemClickCallback(object : ListStoriesAdapter.OnItemClickCallback {
-                        override fun onItemClicked(story: ListStoryItem) {
-                            showSnackbar(binding.root, story.toString())
-                        }
-                    })
+        viewModel.apply {
+            isLoading.observe(viewLifecycleOwner) {
+                showLoading(it)
+            }
+
+            stories.observe(viewLifecycleOwner) {
+                setStoriesAdapter(ArrayList(it))
+                binding.noDataText.visibility = visibility(it.isEmpty())
+            }
+
+            error.observe(viewLifecycleOwner) {
+                it.getContentIfNotHandled()?.let {
+                    showSnackbar(binding.root, it, getString(R.string.retry)) {
+                        viewModel.getAllStories()
+                    }
                 }
             }
+        }
+    }
+
+    private fun setStoriesAdapter(stories: ArrayList<ListStoryItem>) {
+        binding.listStory.adapter = ListStoriesAdapter(stories).apply {
+            setOnItemClickCallback(object : ListStoriesAdapter.OnItemClickCallback {
+                override fun onItemClicked(story: ListStoryItem) {
+                    view?.findNavController()?.navigate(
+                        StoriesFragmentDirections
+                            .actionStoriesFragmentToStoryDetailFragment(story)
+                    )
+                }
+            })
+        }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.apply {
+            listStory.visibility = visibility(!isLoading)
+            storiesLoadingGroup.visibility = visibility(isLoading)
         }
     }
 
