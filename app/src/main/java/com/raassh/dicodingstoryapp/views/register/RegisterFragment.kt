@@ -89,32 +89,29 @@ class RegisterFragment : Fragment() {
                     nameInput.text.toString(),
                     emailInput.text.toString(),
                     passwordInput.text.toString()
-                )
-            }
-        }
+                ).observe(viewLifecycleOwner) {
+                    if (it != null) {
+                        when(it) {
+                            is Result.Loading ->
+                                showLoading(true)
+                            is Result.Success -> {
+                                showLoading(false)
 
-        viewModel.result.observe(viewLifecycleOwner) {
-            val result = it.getContentIfNotHandled()
-            if (result != null) {
-                when(result) {
-                    is Result.Loading ->
-                        showLoading(true)
-                    is Result.Success -> {
-                        showLoading(false)
+                                if (it.data == RegisterViewModel.REGISTERED) {
+                                    showSnackbar(binding.root, getString(R.string.register_success))
 
-                        if (result.data == RegisterViewModel.REGISTERED) {
-                            showSnackbar(binding.root, getString(R.string.register_success))
+                                    val navigateAction = RegisterFragmentDirections
+                                        .actionRegisterFragmentToLoginFragment()
+                                    navigateAction.email = binding.emailInput.text.toString()
 
-                            val navigateAction = RegisterFragmentDirections
-                                .actionRegisterFragmentToLoginFragment()
-                            navigateAction.email = binding.emailInput.text.toString()
-
-                            view.findNavController().navigate(navigateAction)
+                                    view.findNavController().navigate(navigateAction)
+                                }
+                            }
+                            is Result.Error -> {
+                                showLoading(false)
+                                showSnackbar(binding.root, it.error)
+                            }
                         }
-                    }
-                    is Result.Error -> {
-                        showLoading(false)
-                        showSnackbar(binding.root, result.error)
                     }
                 }
             }

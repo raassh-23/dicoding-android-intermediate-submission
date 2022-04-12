@@ -86,25 +86,23 @@ class LoginFragment : Fragment() {
                 }
 
                 viewModel.login(emailInput.text.toString(), passwordInput.text.toString())
-            }
-        }
-
-        viewModel.result.observe(viewLifecycleOwner) {
-            val result = it.getContentIfNotHandled()
-            if (result != null) {
-                when(result) {
-                    is Result.Loading ->
-                        showLoading(true)
-                    is Result.Success -> {
-                        showLoading(false)
-                        sharedViewModel.saveToken(result.data)
-                        showSnackbar(binding.root, getString(R.string.login_success))
+                    .observe(viewLifecycleOwner) {
+                        if (it != null) {
+                            when(it) {
+                                is Result.Loading ->
+                                    showLoading(true)
+                                is Result.Success -> {
+                                    showLoading(false)
+                                    sharedViewModel.saveToken(it.data)
+                                    showSnackbar(binding.root, getString(R.string.login_success))
+                                }
+                                is Result.Error -> {
+                                    showLoading(false)
+                                    showSnackbar(binding.root, it.error)
+                                }
+                            }
+                        }
                     }
-                    is Result.Error -> {
-                        showLoading(false)
-                        showSnackbar(binding.root, result.error)
-                    }
-                }
             }
         }
 

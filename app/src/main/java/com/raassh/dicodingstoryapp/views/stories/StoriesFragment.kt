@@ -2,6 +2,8 @@ package com.raassh.dicodingstoryapp.views.stories
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.data.SessionPreferences
 import com.raassh.dicodingstoryapp.databinding.LoginFragmentBinding
@@ -27,6 +30,8 @@ class StoriesFragment : Fragment() {
     private var _binding: StoriesFragmentBinding? = null
     private val binding get() = _binding!!
 
+    private var token = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.show()
@@ -38,6 +43,16 @@ class StoriesFragment : Fragment() {
     ): View {
         _binding = StoriesFragmentBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        sharedViewModel.getToken().observe(viewLifecycleOwner) {
+            if (!TextUtils.isEmpty(it)) {
+                token = it
+                Log.d("TAG", "onViewCreated: $token")
+            }
+        }
     }
 
     override fun onDestroyView() {
