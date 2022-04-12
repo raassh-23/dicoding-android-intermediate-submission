@@ -2,7 +2,6 @@ package com.raassh.dicodingstoryapp.views.register
 
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.util.Patterns
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -10,11 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.databinding.RegisterFragmentBinding
-import com.raassh.dicodingstoryapp.misc.Result
 import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
 import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.visibility
@@ -89,30 +86,32 @@ class RegisterFragment : Fragment() {
                     nameInput.text.toString(),
                     emailInput.text.toString(),
                     passwordInput.text.toString()
-                ).observe(viewLifecycleOwner) {
-                    if (it != null) {
-                        when(it) {
-                            is Result.Loading ->
-                                showLoading(true)
-                            is Result.Success -> {
-                                showLoading(false)
+                )
+            }
+        }
 
-                                if (it.data == RegisterViewModel.REGISTERED) {
-                                    showSnackbar(binding.root, getString(R.string.register_success))
+        viewModel.apply {
+            isLoading.observe(viewLifecycleOwner) {
+                showLoading(it)
+            }
 
-                                    val navigateAction = RegisterFragmentDirections
-                                        .actionRegisterFragmentToLoginFragment()
-                                    navigateAction.email = binding.emailInput.text.toString()
+            isSuccess.observe(viewLifecycleOwner) {
+                it.getContentIfNotHandled()?.let { success ->
+                    if (success) {
+                        showSnackbar(binding.root, getString(R.string.register_success))
 
-                                    view.findNavController().navigate(navigateAction)
-                                }
-                            }
-                            is Result.Error -> {
-                                showLoading(false)
-                                showSnackbar(binding.root, it.error)
-                            }
-                        }
+                        val navigateAction = RegisterFragmentDirections
+                            .actionRegisterFragmentToLoginFragment()
+                        navigateAction.email = binding.emailInput.text.toString()
+
+                        view.findNavController().navigate(navigateAction)
                     }
+                }
+            }
+
+            error.observe(viewLifecycleOwner) {
+                it.getContentIfNotHandled()?.let { message ->
+                    showSnackbar(binding.root, message)
                 }
             }
         }

@@ -19,7 +19,6 @@ import com.raassh.dicodingstoryapp.data.SessionPreferences
 import com.raassh.dicodingstoryapp.databinding.LoginFragmentBinding
 import com.raassh.dicodingstoryapp.views.SharedViewModel
 import com.raassh.dicodingstoryapp.views.dataStore
-import com.raassh.dicodingstoryapp.misc.Result
 import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
 import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.visibility
@@ -86,23 +85,25 @@ class LoginFragment : Fragment() {
                 }
 
                 viewModel.login(emailInput.text.toString(), passwordInput.text.toString())
-                    .observe(viewLifecycleOwner) {
-                        if (it != null) {
-                            when(it) {
-                                is Result.Loading ->
-                                    showLoading(true)
-                                is Result.Success -> {
-                                    showLoading(false)
-                                    sharedViewModel.saveToken(it.data)
-                                    showSnackbar(binding.root, getString(R.string.login_success))
-                                }
-                                is Result.Error -> {
-                                    showLoading(false)
-                                    showSnackbar(binding.root, it.error)
-                                }
-                            }
-                        }
-                    }
+            }
+        }
+
+        viewModel.apply {
+            isLoading.observe(viewLifecycleOwner) {
+                showLoading(it)
+            }
+
+            token.observe(viewLifecycleOwner) {
+                it.getContentIfNotHandled()?.let { token ->
+                    sharedViewModel.saveToken(token)
+                    showSnackbar(binding.root, getString(R.string.login_success))
+                }
+            }
+
+            error.observe(viewLifecycleOwner) {
+                it.getContentIfNotHandled()?.let { message ->
+                    showSnackbar(binding.root, message)
+                }
             }
         }
 

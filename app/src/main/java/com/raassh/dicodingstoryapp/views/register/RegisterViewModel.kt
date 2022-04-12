@@ -1,42 +1,48 @@
 package com.raassh.dicodingstoryapp.views.register
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.gson.Gson
 import com.raassh.dicodingstoryapp.data.api.ApiConfig
 import com.raassh.dicodingstoryapp.data.api.GenericResponse
-import com.raassh.dicodingstoryapp.misc.Result
+import com.raassh.dicodingstoryapp.misc.Event
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class RegisterViewModel : ViewModel() {
-    private val registerResult = MediatorLiveData<Result<String>>()
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
 
-    fun register(name: String, email: String, password: String): LiveData<Result<String>> {
-        registerResult.value = Result.Loading
+    private val _isSuccess = MutableLiveData<Event<Boolean>>()
+    val isSuccess: LiveData<Event<Boolean>> = _isSuccess
+
+    private val _error = MutableLiveData<Event<String>>()
+    val error: LiveData<Event<String>> = _error
+
+    fun register(name: String, email: String, password: String) {
+        _isLoading.value = true
         ApiConfig.getApiService().register(name, email, password)
             .enqueue(object : Callback<GenericResponse> {
                 override fun onResponse(
                     call: Call<GenericResponse>,
                     response: Response<GenericResponse>
                 ) {
+                    _isLoading.value = false
+
                     if (response.isSuccessful) {
-                        registerResult.value = Result.Success(REGISTERED)
+                        _isSuccess.value = Event(true)
                     } else {
-                        registerResult.value = Result.Error(response.message())
+                        val errorResponse = Gson().fromJson(response.errorBody()!!.charStream(), GenericResponse::class.java)
+                        _error.value = Event(errorResponse.message)
                     }
                 }
 
                 override fun onFailure(call: Call<GenericResponse>, t: Throwable) {
-                    registerResult.value = Result.Error(t.message.toString())
+                    _isLoading.value = false
+                    _error.value = Event(t.message.toString())
                 }
             })
-
-        return registerResult
-    }
-
-    companion object {
-        const val REGISTERED = "registered"
     }
 }

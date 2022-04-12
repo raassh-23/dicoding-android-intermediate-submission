@@ -18,4 +18,5 @@
     <string name="logging_in">Logging in....</string>
     <string name="registering">Registering....</string>
     <string name="log_out">Log Out</string>
+    <string name="generic_error">Something\'s wrong</string>
 </resources>
