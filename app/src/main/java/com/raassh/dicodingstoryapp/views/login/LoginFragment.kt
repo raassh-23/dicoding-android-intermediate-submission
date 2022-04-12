@@ -2,15 +2,14 @@ package com.raassh.dicodingstoryapp.views.login
 
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
@@ -21,6 +20,8 @@ import com.raassh.dicodingstoryapp.databinding.LoginFragmentBinding
 import com.raassh.dicodingstoryapp.views.SharedViewModel
 import com.raassh.dicodingstoryapp.views.dataStore
 import com.raassh.dicodingstoryapp.misc.Result
+import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
+import com.raassh.dicodingstoryapp.misc.showSnackbar
 
 class LoginFragment : Fragment() {
     private val viewModel by viewModels<LoginViewModel>()
@@ -31,8 +32,6 @@ class LoginFragment : Fragment() {
     private var _binding: LoginFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private var token = ""
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.hide()
@@ -41,7 +40,7 @@ class LoginFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = LoginFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -49,10 +48,14 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val email = LoginFragmentArgs.fromBundle(arguments as Bundle).email
+
         binding.apply {
             goToRegister.setOnClickListener {
                 it.findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
             }
+
+            emailInput.setText(email)
 
             emailInput.setValidationCallback(object : EditTextWithValidation.InputValidation {
                 override val errorMessage: String
@@ -70,12 +73,13 @@ class LoginFragment : Fragment() {
             })
 
             login.setOnClickListener {
+                hideSoftKeyboard(activity as FragmentActivity)
+
                 val isEmailValid = emailInput.validateInput()
                 val isPasswordValid = passwordInput.validateInput()
 
                 if (!isEmailValid || !isPasswordValid) {
-                    Toast.makeText(context, getString(R.string.validation_error),Toast.LENGTH_SHORT)
-                        .show()
+                    showSnackbar(binding.root, getString(R.string.validation_error))
                     return@setOnClickListener
                 }
 
@@ -92,19 +96,14 @@ class LoginFragment : Fragment() {
                     is Result.Success -> {
                         binding.progress.visibility = View.GONE
                         sharedViewModel.saveToken(result.data)
-                        Toast.makeText(context, result.data, Toast.LENGTH_SHORT).show()
+                        showSnackbar(binding.root, getString(R.string.login_success))
                     }
                     is Result.Error -> {
                         binding.progress.visibility = View.GONE
-                        Toast.makeText(context, result.error, Toast.LENGTH_SHORT).show()
+                        showSnackbar(binding.root, result.error)
                     }
                 }
             }
-        }
-
-        sharedViewModel.getToken().observe(viewLifecycleOwner) {
-            token = it
-            Log.d("asdas", "onViewCreated: $token")
         }
     }
 

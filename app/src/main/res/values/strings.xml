@@ -13,4 +13,6 @@
     <string name="name_hint">Name</string>
     <string name="name_validation_message">Name cannot be empty</string>
     <string name="validation_error">Check your input again</string>
+    <string name="register_success">Successfully registered</string>
+    <string name="login_success">Successfully logged in</string>
 </resources>

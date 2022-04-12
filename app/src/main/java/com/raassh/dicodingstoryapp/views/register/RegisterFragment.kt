@@ -1,26 +1,22 @@
 package com.raassh.dicodingstoryapp.views.register
 
-import android.content.Context
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.util.Patterns
 import android.view.*
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.core.DataStore
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
-import com.raassh.dicodingstoryapp.data.SessionPreferences
-import com.raassh.dicodingstoryapp.databinding.LoginFragmentBinding
 import com.raassh.dicodingstoryapp.databinding.RegisterFragmentBinding
-import com.raassh.dicodingstoryapp.views.SharedViewModel
-import com.raassh.dicodingstoryapp.views.dataStore
-import com.raassh.dicodingstoryapp.views.login.LoginViewModel
+import com.raassh.dicodingstoryapp.misc.Result
+import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
+import com.raassh.dicodingstoryapp.misc.showSnackbar
 
 class RegisterFragment : Fragment() {
     private val viewModel by viewModels<RegisterViewModel>()
@@ -36,7 +32,7 @@ class RegisterFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = RegisterFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -72,6 +68,8 @@ class RegisterFragment : Fragment() {
             })
 
             register.setOnClickListener {
+                hideSoftKeyboard(activity as FragmentActivity)
+
                 // note to self:
                 // doing it like this will validate all input
                 // instead of stopping after the first invalid
@@ -80,10 +78,42 @@ class RegisterFragment : Fragment() {
                 val isPasswordValid = passwordInput.validateInput()
 
                 if (!isNameValid || !isEmailValid || !isPasswordValid) {
+                    showSnackbar(binding.root, getString(R.string.validation_error))
                     return@setOnClickListener
                 }
 
-                Toast.makeText(context, "daftar", Toast.LENGTH_SHORT).show()
+                viewModel.register(
+                    nameInput.text.toString(),
+                    emailInput.text.toString(),
+                    passwordInput.text.toString()
+                )
+            }
+        }
+
+        viewModel.result.observe(viewLifecycleOwner) {
+            val result = it.getContentIfNotHandled()
+            if (result != null) {
+                when(result) {
+                    is Result.Loading ->
+                        binding.progress.visibility = View.VISIBLE
+                    is Result.Success -> {
+                        binding.progress.visibility = View.GONE
+
+                        if (result.data == RegisterViewModel.REGISTERED) {
+                            showSnackbar(binding.root, getString(R.string.register_success))
+
+                            val navigateAction = RegisterFragmentDirections
+                                .actionRegisterFragmentToLoginFragment()
+                            navigateAction.email = binding.emailInput.text.toString()
+
+                            view.findNavController().navigate(navigateAction)
+                        }
+                    }
+                    is Result.Error -> {
+                        binding.progress.visibility = View.GONE
+                        showSnackbar(binding.root, result.error)
+                    }
+                }
             }
         }
     }
