@@ -3,7 +3,10 @@ package com.raassh.dicodingstoryapp.misc
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
 
 fun showSnackbar(view: View, message: String) {
@@ -24,4 +27,11 @@ fun visibility(visible: Boolean) = if (visible) {
     View.VISIBLE
 } else {
     View.INVISIBLE
+}
+
+fun ImageView.loadImage(url: String?) {
+    Glide.with(this.context)
+        .load(url)
+        .centerCrop()
+        .into(this)
 }

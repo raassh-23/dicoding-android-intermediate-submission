@@ -109,7 +109,11 @@ class LoginFragment : Fragment() {
 
         sharedViewModel.getToken().observe(viewLifecycleOwner) {
             if (!TextUtils.isEmpty(it)) {
-                view.findNavController().navigate(R.id.action_loginFragment_to_storiesFragment)
+                val navigateAction = LoginFragmentDirections
+                    .actionLoginFragmentToStoriesFragment()
+                navigateAction.token = it
+
+                view.findNavController().navigate(navigateAction)
             }
         }
     }

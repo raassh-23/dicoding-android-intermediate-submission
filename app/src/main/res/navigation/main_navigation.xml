@@ -39,5 +39,9 @@
         android:name="com.raassh.dicodingstoryapp.views.stories.StoriesFragment"
         android:label="stories_fragment"
         tools:layout="@layout/stories_fragment" >
+        <argument
+            android:name="token"
+            app:argType="string"
+            android:defaultValue=""/>
     </fragment>
 </navigation>

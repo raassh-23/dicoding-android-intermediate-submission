@@ -19,4 +19,6 @@
     <string name="registering">Registering....</string>
     <string name="log_out">Log Out</string>
     <string name="generic_error">Something\'s wrong</string>
+    <string name="stories_user">By %1$s</string>
+    <string name="story_description">Story by %1$s</string>
 </resources>
