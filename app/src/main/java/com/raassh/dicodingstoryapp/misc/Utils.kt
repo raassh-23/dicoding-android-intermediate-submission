@@ -19,3 +19,9 @@ fun hideSoftKeyboard(activity: FragmentActivity) {
         InputMethodManager.HIDE_NOT_ALWAYS
     )
 }
+
+fun visibility(visible: Boolean) = if (visible) {
+    View.VISIBLE
+} else {
+    View.INVISIBLE
+}

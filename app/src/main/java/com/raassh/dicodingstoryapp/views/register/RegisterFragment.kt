@@ -17,6 +17,7 @@ import com.raassh.dicodingstoryapp.databinding.RegisterFragmentBinding
 import com.raassh.dicodingstoryapp.misc.Result
 import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
 import com.raassh.dicodingstoryapp.misc.showSnackbar
+import com.raassh.dicodingstoryapp.misc.visibility
 
 class RegisterFragment : Fragment() {
     private val viewModel by viewModels<RegisterViewModel>()
@@ -39,6 +40,8 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        showLoading(false)
 
         binding.apply {
             goToLogin.setOnClickListener {
@@ -95,9 +98,9 @@ class RegisterFragment : Fragment() {
             if (result != null) {
                 when(result) {
                     is Result.Loading ->
-                        binding.progress.visibility = View.VISIBLE
+                        showLoading(true)
                     is Result.Success -> {
-                        binding.progress.visibility = View.GONE
+                        showLoading(false)
 
                         if (result.data == RegisterViewModel.REGISTERED) {
                             showSnackbar(binding.root, getString(R.string.register_success))
@@ -110,11 +113,18 @@ class RegisterFragment : Fragment() {
                         }
                     }
                     is Result.Error -> {
-                        binding.progress.visibility = View.GONE
+                        showLoading(false)
                         showSnackbar(binding.root, result.error)
                     }
                 }
             }
+        }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.apply {
+            registerGroup.visibility = visibility(!isLoading)
+            registerLoadingGroup.visibility = visibility(isLoading)
         }
     }
 

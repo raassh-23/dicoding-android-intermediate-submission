@@ -22,6 +22,7 @@ import com.raassh.dicodingstoryapp.views.dataStore
 import com.raassh.dicodingstoryapp.misc.Result
 import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
 import com.raassh.dicodingstoryapp.misc.showSnackbar
+import com.raassh.dicodingstoryapp.misc.visibility
 
 class LoginFragment : Fragment() {
     private val viewModel by viewModels<LoginViewModel>()
@@ -48,6 +49,7 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        showLoading(false)
         val email = LoginFragmentArgs.fromBundle(arguments as Bundle).email
 
         binding.apply {
@@ -92,18 +94,25 @@ class LoginFragment : Fragment() {
             if (result != null) {
                 when(result) {
                     is Result.Loading ->
-                        binding.progress.visibility = View.VISIBLE
+                        showLoading(true)
                     is Result.Success -> {
-                        binding.progress.visibility = View.GONE
+                        showLoading(false)
                         sharedViewModel.saveToken(result.data)
                         showSnackbar(binding.root, getString(R.string.login_success))
                     }
                     is Result.Error -> {
-                        binding.progress.visibility = View.GONE
+                        showLoading(false)
                         showSnackbar(binding.root, result.error)
                     }
                 }
             }
+        }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.apply {
+            loginGroup.visibility = visibility(!isLoading)
+            loginLoadingGroup.visibility = visibility(isLoading)
         }
     }
 
