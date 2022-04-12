@@ -17,4 +17,5 @@
     <string name="login_success">Successfully logged in</string>
     <string name="logging_in">Logging in....</string>
     <string name="registering">Registering....</string>
+    <string name="log_out">Log Out</string>
 </resources>

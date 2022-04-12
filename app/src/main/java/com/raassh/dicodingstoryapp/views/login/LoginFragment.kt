@@ -107,6 +107,12 @@ class LoginFragment : Fragment() {
                 }
             }
         }
+
+        sharedViewModel.getToken().observe(viewLifecycleOwner) {
+            if (!TextUtils.isEmpty(it)) {
+                view.findNavController().navigate(R.id.action_loginFragment_to_storiesFragment)
+            }
+        }
     }
 
     private fun showLoading(isLoading: Boolean) {
