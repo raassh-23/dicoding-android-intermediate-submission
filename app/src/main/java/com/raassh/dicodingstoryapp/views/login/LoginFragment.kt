@@ -2,17 +2,17 @@ package com.raassh.dicodingstoryapp.views.login
 
 import android.os.Bundle
 import android.text.TextUtils
+import android.transition.TransitionInflater
 import android.util.Patterns
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.datastore.core.DataStore
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
@@ -23,6 +23,7 @@ import com.raassh.dicodingstoryapp.views.dataStore
 import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
 import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.visibility
+import com.raassh.dicodingstoryapp.views.register.RegisterFragment
 
 class LoginFragment : Fragment() {
     private val viewModel by viewModels<LoginViewModel>()
@@ -50,14 +51,26 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         showLoading(false)
-        val email = LoginFragmentArgs.fromBundle(arguments as Bundle).email
+
+        setFragmentResultListener(RegisterFragment.REGISTER_RESULT) { _, bundle ->
+            val email = bundle.getString("email", "")
+            binding.emailInput.setText(email)
+        }
 
         binding.apply {
             goToRegister.setOnClickListener {
-                it.findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+                findNavController().navigate(
+                    R.id.action_loginFragment_to_registerFragment,
+                    null,
+                    null,
+                    FragmentNavigatorExtras(
+                        emailInput to emailInput.transitionName,
+                        passwordInput to passwordInput.transitionName,
+                        login to login.transitionName,
+                        goToRegister to goToRegister.transitionName
+                    )
+                )
             }
-
-            emailInput.setText(email)
 
             emailInput.setValidationCallback(object : EditTextWithValidation.InputValidation {
                 override val errorMessage: String

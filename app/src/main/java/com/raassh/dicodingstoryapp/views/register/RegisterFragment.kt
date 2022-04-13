@@ -2,15 +2,19 @@ package com.raassh.dicodingstoryapp.views.register
 
 import android.os.Bundle
 import android.text.TextUtils
+import android.transition.TransitionInflater
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
@@ -24,6 +28,12 @@ class RegisterFragment : Fragment() {
 
     private var _binding: RegisterFragmentBinding? = null
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition = TransitionInflater.from(context)
+            .inflateTransition(android.R.transition.move)
+    }
 
     override fun onResume() {
         super.onResume()
@@ -45,7 +55,7 @@ class RegisterFragment : Fragment() {
 
         binding.apply {
             goToLogin.setOnClickListener {
-                it.findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+                findNavController().navigateUp()
             }
 
             nameInput.setValidationCallback(object : EditTextWithValidation.InputValidation {
@@ -123,11 +133,11 @@ class RegisterFragment : Fragment() {
     private fun registered() {
         showSnackbar(binding.root, getString(R.string.register_success))
 
-        val navigateAction = RegisterFragmentDirections
-            .actionRegisterFragmentToLoginFragment()
-        navigateAction.email = binding.emailInput.text.toString()
+        setFragmentResult(REGISTER_RESULT, bundleOf(
+            "email" to binding.emailInput.text.toString()
+        ))
 
-        findNavController().navigate(navigateAction)
+        findNavController().navigateUp()
     }
 
     private fun showLoading(isLoading: Boolean) {
@@ -140,5 +150,9 @@ class RegisterFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        const val REGISTER_RESULT = "register_result"
     }
 }

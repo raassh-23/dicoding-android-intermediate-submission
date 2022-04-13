@@ -56,6 +56,7 @@
         android:layout_marginEnd="16dp"
         android:hint="@string/email_hint"
         android:minHeight="48dp"
+        android:transitionName="email_input"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name_input" />
@@ -70,6 +71,7 @@
         android:hint="@string/password_hint"
         android:inputType="textPassword"
         android:minHeight="48dp"
+        android:transitionName="password_input"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email_input" />
@@ -80,6 +82,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/register_btn"
+        android:transitionName="action_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_input" />
@@ -90,6 +93,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/go_to_login_btn"
+        android:transitionName="go_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/register" />
@@ -107,8 +111,8 @@
         android:id="@+id/loading_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/registering"
         android:layout_marginTop="8dp"
+        android:text="@string/registering"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progress" />

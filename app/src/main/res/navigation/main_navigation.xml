@@ -13,10 +13,6 @@
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
-        <argument
-            android:name="email"
-            android:defaultValue=""
-            app:argType="string" />
         <action
             android:id="@+id/action_loginFragment_to_storiesFragment"
             app:destination="@id/storiesFragment"
@@ -27,13 +23,7 @@
         android:id="@+id/registerFragment"
         android:name="com.raassh.dicodingstoryapp.views.register.RegisterFragment"
         android:label="Register"
-        tools:layout="@layout/register_fragment">
-        <action
-            android:id="@+id/action_registerFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:popUpTo="@id/registerFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/register_fragment"/>
     <fragment
         android:id="@+id/storiesFragment"
         android:name="com.raassh.dicodingstoryapp.views.stories.StoriesFragment"

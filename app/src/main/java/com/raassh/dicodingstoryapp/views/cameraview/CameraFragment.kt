@@ -90,11 +90,8 @@ class CameraFragment : Fragment() {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     setFragmentResult(
                         CAMERA_RESULT, bundleOf(
-                            Pair("picture", outputFileResults.savedUri),
-                            Pair(
-                                "isBackCamera",
-                                cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA
-                            )
+                            "picture" to outputFileResults.savedUri,
+                            "isBackCamera" to (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA)
                         )
                     )
 
