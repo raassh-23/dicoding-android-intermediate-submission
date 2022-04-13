@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dicoding Story App</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Kata Sandi</string>
+    <string name="welcome">Selamat datang di Story App</string>
+    <string name="go_to_register_btn">Ke pendaftaran</string>
+    <string name="login_btn">Masuk</string>
+    <string name="email_validation_message">Email tidak valid</string>
+    <string name="password_validation_message">Password harus punya minimal 6 karakter</string>
+    <string name="login_screen_message">Silahkan masuk terlebih dahulu atau mendaftar akun baru</string>
+    <string name="go_to_login_btn">Ke halaman masuk</string>
+    <string name="register_btn">Daftar</string>
+    <string name="name_hint">Nama</string>
+    <string name="name_validation_message">Nama tidak boleh kosong</string>
+    <string name="validation_error">Periksa lagi masukan anda</string>
+    <string name="register_success">Berhasil mendaftar</string>
+    <string name="login_success">Berhasil masuk</string>
+    <string name="logging_in">Sedang masuk....</string>
+    <string name="registering">Sedang mendaftar....</string>
+    <string name="log_out">Keluar</string>
+    <string name="generic_error">Terjadi masalah</string>
+    <string name="stories_user">Oleh %1$s</string>
+    <string name="stories_content_description">Story oleh %1$s</string>
+    <string name="stories_uploaded">Diupload pada %1$s</string>
+    <string name="stories_desc">Deskripsi: %1$s</string>
+    <string name="back_btn">Kembali</string>
+    <string name="loading_data">Memuat....</string>
+    <string name="no_data">Tidak ada data</string>
+    <string name="retry">Coba lagi</string>
+    <string name="add_btn_content_description">Tambahkan story baru</string>
+    <string name="camera">Kamera</string>
+    <string name="gallery">Galeri</string>
+    <string name="add_new">Tambah story</string>
+    <string name="desc_validation_message">Deskripsi tidak boleh kosong</string>
+    <string name="chooser_title">Pilih sebuah gambar</string>
+    <string name="description_hint">Deskripsi</string>
+    <string name="permission_denied">Permintaan izin ditolak</string>
+    <string name="take_picture_success">Gambar berhasil diambil</string>
+    <string name="take_picture_fail">Pengambilan gambar gagal</string>
+    <string name="uploading">Mengunggah gambar....</string>
+    <string name="preview_of_image">Pratinjau gambar</string>
+    <string name="upload_success">Story berhasil ditambah</string>
+    <string name="setting">Pengaturan Bahasa</string>
+</resources>

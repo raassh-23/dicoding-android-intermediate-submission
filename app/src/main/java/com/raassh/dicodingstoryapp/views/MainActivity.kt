@@ -1,7 +1,9 @@
 package com.raassh.dicodingstoryapp.views
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -9,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.raassh.dicodingstoryapp.R
@@ -40,14 +43,10 @@ class MainActivity : AppCompatActivity() {
 
         when(item.itemId) {
             R.id.logout -> {
-                viewModel.saveToken("")
-
-                // ref: https://github.com/android/architecture-components-samples/issues/767
-                val navHostFragment = supportFragmentManager.findFragmentById(binding.container.id) as NavHostFragment
-                val inflater = navHostFragment.navController.navInflater
-                val graph = inflater.inflate(R.navigation.main_navigation)
-                graph.setStartDestination(R.id.loginFragment)
-                navController.graph = graph
+                logout(navController)
+            }
+            R.id.setting -> {
+                startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
             }
             android.R.id.home -> {
                 navController.navigateUp()
@@ -55,5 +54,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         return true
+    }
+
+    private fun logout(navController: NavController) {
+        viewModel.saveToken("")
+
+        // ref: https://github.com/android/architecture-components-samples/issues/767
+        val navHostFragment = supportFragmentManager.findFragmentById(binding.container.id) as NavHostFragment
+        val inflater = navHostFragment.navController.navInflater
+        val graph = inflater.inflate(R.navigation.main_navigation)
+        graph.setStartDestination(R.id.loginFragment)
+        navController.graph = graph
     }
 }
