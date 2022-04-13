@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.data.SessionPreferences
@@ -74,17 +75,7 @@ class LoginFragment : Fragment() {
             })
 
             login.setOnClickListener {
-                hideSoftKeyboard(activity as FragmentActivity)
-
-                val isEmailValid = emailInput.validateInput()
-                val isPasswordValid = passwordInput.validateInput()
-
-                if (!isEmailValid || !isPasswordValid) {
-                    showSnackbar(binding.root, getString(R.string.validation_error))
-                    return@setOnClickListener
-                }
-
-                viewModel.login(emailInput.text.toString(), passwordInput.text.toString())
+                tryLogin()
             }
         }
 
@@ -94,9 +85,8 @@ class LoginFragment : Fragment() {
             }
 
             token.observe(viewLifecycleOwner) {
-                it.getContentIfNotHandled()?.let { token ->
-                    sharedViewModel.saveToken(token)
-                    showSnackbar(binding.root, getString(R.string.login_success))
+                it.getContentIfNotHandled()?.let {
+                    loggedIn(it)
                 }
             }
 
@@ -109,13 +99,38 @@ class LoginFragment : Fragment() {
 
         sharedViewModel.getToken().observe(viewLifecycleOwner) {
             if (!TextUtils.isEmpty(it)) {
-                val navigateAction = LoginFragmentDirections
-                    .actionLoginFragmentToStoriesFragment()
-                navigateAction.token = it
-
-                view.findNavController().navigate(navigateAction)
+                goToStories(it)
             }
         }
+    }
+
+    private fun tryLogin() {
+        hideSoftKeyboard(activity as FragmentActivity)
+
+        with(binding) {
+            val isEmailValid = emailInput.validateInput()
+            val isPasswordValid = passwordInput.validateInput()
+
+            if (!isEmailValid || !isPasswordValid) {
+                showSnackbar(root, getString(R.string.validation_error))
+                return
+            }
+
+            viewModel.login(emailInput.text.toString(), passwordInput.text.toString())
+        }
+    }
+
+    private fun loggedIn(token: String) {
+        sharedViewModel.saveToken(token)
+        showSnackbar(binding.root, getString(R.string.login_success))
+    }
+
+    private fun goToStories(token: String) {
+        val navigateAction = LoginFragmentDirections
+            .actionLoginFragmentToStoriesFragment()
+        navigateAction.token = token
+
+        findNavController().navigate(navigateAction)
     }
 
     private fun showLoading(isLoading: Boolean) {

@@ -3,12 +3,15 @@ package com.raassh.dicodingstoryapp.views.register
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Patterns
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.databinding.RegisterFragmentBinding
@@ -68,25 +71,7 @@ class RegisterFragment : Fragment() {
             })
 
             register.setOnClickListener {
-                hideSoftKeyboard(activity as FragmentActivity)
-
-                // note to self:
-                // doing it like this will validate all input
-                // instead of stopping after the first invalid
-                val isNameValid = nameInput.validateInput()
-                val isEmailValid = emailInput.validateInput()
-                val isPasswordValid = passwordInput.validateInput()
-
-                if (!isNameValid || !isEmailValid || !isPasswordValid) {
-                    showSnackbar(binding.root, getString(R.string.validation_error))
-                    return@setOnClickListener
-                }
-
-                viewModel.register(
-                    nameInput.text.toString(),
-                    emailInput.text.toString(),
-                    passwordInput.text.toString()
-                )
+                tryRegister()
             }
         }
 
@@ -98,13 +83,7 @@ class RegisterFragment : Fragment() {
             isSuccess.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { success ->
                     if (success) {
-                        showSnackbar(binding.root, getString(R.string.register_success))
-
-                        val navigateAction = RegisterFragmentDirections
-                            .actionRegisterFragmentToLoginFragment()
-                        navigateAction.email = binding.emailInput.text.toString()
-
-                        view.findNavController().navigate(navigateAction)
+                        registered()
                     }
                 }
             }
@@ -115,6 +94,40 @@ class RegisterFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun tryRegister() {
+        hideSoftKeyboard(activity as FragmentActivity)
+
+        with(binding) {
+            // note to self:
+            // doing it like this will validate all input
+            // instead of stopping after the first invalid
+            val isNameValid = nameInput.validateInput()
+            val isEmailValid = emailInput.validateInput()
+            val isPasswordValid = passwordInput.validateInput()
+
+            if (!isNameValid || !isEmailValid || !isPasswordValid) {
+                showSnackbar(root, getString(R.string.validation_error))
+                return
+            }
+
+            viewModel.register(
+                nameInput.text.toString(),
+                emailInput.text.toString(),
+                passwordInput.text.toString()
+            )
+        }
+    }
+
+    private fun registered() {
+        showSnackbar(binding.root, getString(R.string.register_success))
+
+        val navigateAction = RegisterFragmentDirections
+            .actionRegisterFragmentToLoginFragment()
+        navigateAction.email = binding.emailInput.text.toString()
+
+        findNavController().navigate(navigateAction)
     }
 
     private fun showLoading(isLoading: Boolean) {
