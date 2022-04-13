@@ -1,11 +1,10 @@
 package com.raassh.dicodingstoryapp.views.cameraview
 
-import android.Manifest
-import android.app.Application
+import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,12 +17,13 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.databinding.FragmentCameraBinding
-import com.raassh.dicodingstoryapp.misc.createFile
-import java.lang.Exception
+import com.raassh.dicodingstoryapp.misc.showSnackbar
+import com.raassh.dicodingstoryapp.misc.timeStamp
 
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
@@ -64,25 +64,28 @@ class CameraFragment : Fragment() {
     private fun takePhoto() {
         val image = imageCapture ?: return
 
-        val photoFIle = createFile(activity?.application as Application)
+        val name = "$timeStamp.jpg"
 
         val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(photoFIle).build()
+            .Builder(context?.contentResolver as ContentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                ContentValues().apply {
+                    put(MediaStore.Images.Media.TITLE, name)
+                    put(MediaStore.Images.Media.DISPLAY_NAME, name)
+                    put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                    put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis())
+                    put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
+                }
+            )
+            .build()
 
         image.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(context as Context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    Toast.makeText(
-                        context,
-                        "Berhasil mengambil gambar",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
                     setFragmentResult(
                         CAMERA_RESULT, bundleOf(
-                            Pair("picture", photoFIle),
+                            Pair("picture", outputFileResults.savedUri),
                             Pair(
                                 "isBackCamera",
                                 cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA
@@ -94,11 +97,7 @@ class CameraFragment : Fragment() {
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                    Toast.makeText(
-                        context,
-                        "Gagal mengambil gambar",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showSnackbar(binding.root, getString(R.string.take_picture_fail))
                 }
             }
         )

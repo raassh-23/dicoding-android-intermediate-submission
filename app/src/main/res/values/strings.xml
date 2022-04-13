@@ -37,4 +37,9 @@
     <string name="chooser_title">Choose a image</string>
     <string name="description_hint">Description</string>
     <string name="permission_denied">Permission request is denied</string>
+    <string name="take_picture_success">Picture taken successfully</string>
+    <string name="take_picture_fail">Take picture failed</string>
+    <string name="uploading">Uploading image....</string>
+    <string name="preview_of_image">Preview of image</string>
+    <string name="upload_success">Story successfully added</string>
 </resources>

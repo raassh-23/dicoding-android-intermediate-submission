@@ -1,34 +1,28 @@
 package com.raassh.dicodingstoryapp.views.newstory
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
+import androidx.core.os.bundleOf
+import androidx.fragment.app.*
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.databinding.NewStoryFragmentBinding
-import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
-import com.raassh.dicodingstoryapp.misc.rotateBitmap
-import com.raassh.dicodingstoryapp.misc.showSnackbar
-import com.raassh.dicodingstoryapp.misc.uriToFile
+import com.raassh.dicodingstoryapp.misc.*
 import com.raassh.dicodingstoryapp.views.cameraview.CameraFragment
 import java.io.File
 
@@ -39,6 +33,7 @@ class NewStoryFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var imgFile: File? = null
+    private var token = ""
 
     private val launcherPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -78,15 +73,19 @@ class NewStoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        showLoading(false)
+        token = NewStoryFragmentArgs.fromBundle(arguments as Bundle).token
+
         if (!allPermissionGranted()) {
             launcherPermissionRequest.launch(REQUIRED_PERMISSIONS)
         }
 
         setFragmentResultListener(CameraFragment.CAMERA_RESULT) { _, bundle ->
-            Log.d("TAG", "onViewCreated: $bundle")
-            imgFile = bundle.get("picture") as File
+            showSnackbar(binding.root, getString(R.string.take_picture_success))
+            val uri = bundle.getParcelable<Uri>("picture") as Uri
             val isBackCamera = bundle.get("isBackCamera") as Boolean
 
+            imgFile = uriToFile(uri, context as Context)
             val result = rotateBitmap(
                 BitmapFactory.decodeFile(imgFile?.path),
                 isBackCamera
@@ -125,7 +124,31 @@ class NewStoryFragment : Fragment() {
                     return@setOnClickListener
                 }
 
-//                viewModel.addNewStory()
+                viewModel.addNewStory(imgFile as File, descriptionInput.text.toString(), token)
+            }
+        }
+
+        viewModel.apply {
+            isLoading.observe(viewLifecycleOwner) {
+                showLoading(it)
+            }
+
+            isSuccess.observe(viewLifecycleOwner) {
+                it.getContentIfNotHandled()?.let { success ->
+                    if (success) {
+                        setFragmentResult(ADD_RESULT, bundleOf(
+                            Pair("isSuccess", true)
+                        ))
+
+                        view.findNavController().navigateUp()
+                    }
+                }
+            }
+
+            error.observe(viewLifecycleOwner) {
+                it.getContentIfNotHandled()?.let { message ->
+                    showSnackbar(binding.root, message)
+                }
             }
         }
     }
@@ -142,8 +165,20 @@ class NewStoryFragment : Fragment() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun showLoading(isLoading: Boolean) {
+        binding.apply {
+            uploadGroup.visibility = visibility(!isLoading)
+            uploadLoadingGroup.visibility = visibility(isLoading)
+        }
+    }
+
     companion object {
-        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
-        private const val REQUEST_CODE_PERMISSIONS = 10
+        private val REQUIRED_PERMISSIONS = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else {
+            arrayOf(Manifest.permission.CAMERA)
+        }
+
+        const val ADD_RESULT = "add_result"
     }
 }

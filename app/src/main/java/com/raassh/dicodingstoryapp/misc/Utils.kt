@@ -23,10 +23,8 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val FILENAME_FORMAT = "yyyy-MM-dd"
-
 val timeStamp: String = SimpleDateFormat(
-    FILENAME_FORMAT,
+    "yyyy-MM-dd",
     Locale.US
 ).format(System.currentTimeMillis())
 
@@ -67,7 +65,6 @@ fun String.withDateFormat(): String {
     val format = SimpleDateFormat(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         "yyyy-MM-dd'T'HH:mm:ss.SSSX"
     } else {
-        // need better work around
         "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     }, Locale.US)
 
@@ -79,18 +76,6 @@ fun createTempFile(context: Context): File {
     val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
 
     return File.createTempFile(timeStamp, ".jpg", storageDir)
-}
-
-fun createFile(application: Application): File {
-    val mediaDir = application.externalMediaDirs.firstOrNull()?.let {
-        File(it, application.resources.getString(R.string.app_name)).apply { mkdirs() }
-    }
-
-    val outputDirectory = if (
-        mediaDir != null && mediaDir.exists()
-    ) mediaDir else application.filesDir
-
-    return File(outputDirectory, "$timeStamp.jpg")
 }
 
 fun rotateBitmap(bitmap: Bitmap, isBackCamera: Boolean = false): Bitmap {

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -18,7 +19,7 @@ import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.StoriesFragmentBinding
 import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.visibility
-import com.raassh.dicodingstoryapp.views.login.LoginFragmentDirections
+import com.raassh.dicodingstoryapp.views.newstory.NewStoryFragment
 
 class StoriesFragment : Fragment() {
     private var token = ""
@@ -50,6 +51,14 @@ class StoriesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         token = StoriesFragmentArgs.fromBundle(arguments as Bundle).token
+
+        setFragmentResultListener(NewStoryFragment.ADD_RESULT) { _, bundle ->
+            if (bundle.getBoolean("isSuccess")) {
+                showSnackbar(binding.root, getString(R.string.upload_success))
+
+                viewModel.getAllStories()
+            }
+        }
 
         val layoutManager = if (activity?.applicationContext
                 ?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT) {
