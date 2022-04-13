@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.raassh.dicodingstoryapp.R
+import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.StoryDetailFragmentBinding
 import com.raassh.dicodingstoryapp.misc.loadImage
 import com.raassh.dicodingstoryapp.misc.withDateFormat
@@ -32,7 +33,10 @@ class StoryDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val story = StoryDetailFragmentArgs.fromBundle(arguments as Bundle).story
+        showStory(story)
+    }
 
+    private fun showStory(story: ListStoryItem) {
         binding.apply {
             storyImage.loadImage(story.photoUrl)
             storyImage.contentDescription = getString(

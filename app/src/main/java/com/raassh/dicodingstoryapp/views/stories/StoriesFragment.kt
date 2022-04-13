@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -54,9 +55,7 @@ class StoriesFragment : Fragment() {
 
         setFragmentResultListener(NewStoryFragment.ADD_RESULT) { _, bundle ->
             if (bundle.getBoolean("isSuccess")) {
-                showSnackbar(binding.root, getString(R.string.upload_success))
-
-                viewModel.getAllStories()
+                storyAdded()
             }
         }
 
@@ -80,11 +79,7 @@ class StoriesFragment : Fragment() {
             }
 
             addNew.setOnClickListener {
-                val navigateAction = StoriesFragmentDirections
-                    .actionStoriesFragmentToNewStoryFragment()
-                navigateAction.token = token
-
-                view.findNavController().navigate(navigateAction)
+                goToNewStory()
             }
         }
 
@@ -106,6 +101,20 @@ class StoriesFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun storyAdded() {
+        showSnackbar(binding.root, getString(R.string.upload_success))
+
+        viewModel.getAllStories()
+    }
+
+    private fun goToNewStory() {
+        val navigateAction = StoriesFragmentDirections
+            .actionStoriesFragmentToNewStoryFragment()
+        navigateAction.token = token
+
+        findNavController().navigate(navigateAction)
     }
 
     private fun setStoriesAdapter(stories: ArrayList<ListStoryItem>) {

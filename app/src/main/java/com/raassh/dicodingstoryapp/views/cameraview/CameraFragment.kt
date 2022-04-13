@@ -49,15 +49,20 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.captureImage.setOnClickListener { takePhoto() }
-        binding.switchCamera.setOnClickListener {
-            cameraSelector = if (cameraSelector.equals(CameraSelector.DEFAULT_BACK_CAMERA)) {
-                CameraSelector.DEFAULT_FRONT_CAMERA
-            } else {
-                CameraSelector.DEFAULT_BACK_CAMERA
+        binding.apply {
+            captureImage.setOnClickListener {
+                takePhoto()
             }
 
-            startCamera()
+            switchCamera.setOnClickListener {
+                cameraSelector = if (cameraSelector.equals(CameraSelector.DEFAULT_BACK_CAMERA)) {
+                    CameraSelector.DEFAULT_FRONT_CAMERA
+                } else {
+                    CameraSelector.DEFAULT_BACK_CAMERA
+                }
+
+                startCamera()
+            }
         }
     }
 
@@ -124,11 +129,7 @@ class CameraFragment : Fragment() {
                     imageCapture
                 )
             } catch (e: Exception) {
-                Toast.makeText(
-                    context,
-                    "Gagal memunculkan kamera.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showSnackbar(binding.root, getString(R.string.camera_fail))
             }
         }, ContextCompat.getMainExecutor(context as Context))
     }

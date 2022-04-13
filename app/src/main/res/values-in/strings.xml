@@ -42,4 +42,6 @@
     <string name="preview_of_image">Pratinjau gambar</string>
     <string name="upload_success">Story berhasil ditambah</string>
     <string name="setting">Pengaturan Bahasa</string>
+    <string name="camera_fail">Kamera gagal dibuka</string>
+    <string name="load_picture_success">Gambar berhasil dimuat</string>
 </resources>

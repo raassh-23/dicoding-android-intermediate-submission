@@ -41,4 +41,6 @@
     <string name="preview_of_image">Preview of image</string>
     <string name="upload_success">Story successfully added</string>
     <string name="setting">Language Setting</string>
+    <string name="camera_fail">Opening camera failed</string>
+    <string name="load_picture_success">Picture successfully loaded</string>
 </resources>

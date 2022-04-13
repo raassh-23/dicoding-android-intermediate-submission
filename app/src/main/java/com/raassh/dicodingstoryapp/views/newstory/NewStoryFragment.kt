@@ -48,6 +48,7 @@ class NewStoryFragment : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == AppCompatActivity.RESULT_OK) {
+            showSnackbar(binding.root, getString(R.string.load_picture_success))
             val selectedImage = it.data?.data as Uri
             imgFile = uriToFile(selectedImage, context as Context)
             binding.previewImage.setImageURI(selectedImage)
@@ -81,17 +82,7 @@ class NewStoryFragment : Fragment() {
         }
 
         setFragmentResultListener(CameraFragment.CAMERA_RESULT) { _, bundle ->
-            showSnackbar(binding.root, getString(R.string.take_picture_success))
-            val uri = bundle.getParcelable<Uri>("picture") as Uri
-            val isBackCamera = bundle.get("isBackCamera") as Boolean
-
-            imgFile = uriToFile(uri, context as Context)
-            val result = rotateBitmap(
-                BitmapFactory.decodeFile(imgFile?.path),
-                isBackCamera
-            )
-
-            binding.previewImage.setImageBitmap(result)
+            showCameraResult(bundle)
         }
 
         binding.apply {
@@ -107,24 +98,11 @@ class NewStoryFragment : Fragment() {
             }
 
             galleryButton.setOnClickListener {
-                val intent = Intent().apply {
-                    action = Intent.ACTION_GET_CONTENT
-                    type = "image/*"
-                }
-
-                val chooser = Intent.createChooser(intent, getString(R.string.chooser_title))
-                launcherIntentGallery.launch(chooser)
+                pickImageFromGallery()
             }
 
             addButton.setOnClickListener {
-                hideSoftKeyboard(activity as FragmentActivity)
-
-                if (!descriptionInput.validateInput() || imgFile == null) {
-                    showSnackbar(binding.root, getString(R.string.validation_error))
-                    return@setOnClickListener
-                }
-
-                viewModel.addNewStory(imgFile as File, descriptionInput.text.toString(), token)
+                addStory()
             }
         }
 
@@ -136,11 +114,7 @@ class NewStoryFragment : Fragment() {
             isSuccess.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { success ->
                     if (success) {
-                        setFragmentResult(ADD_RESULT, bundleOf(
-                            Pair("isSuccess", true)
-                        ))
-
-                        view.findNavController().navigateUp()
+                        goBack()
                     }
                 }
             }
@@ -151,6 +125,51 @@ class NewStoryFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showCameraResult(bundle: Bundle) {
+        showSnackbar(binding.root, getString(R.string.take_picture_success))
+        val uri = bundle.getParcelable<Uri>("picture") as Uri
+        val isBackCamera = bundle.get("isBackCamera") as Boolean
+
+        imgFile = uriToFile(uri, context as Context)
+        val result = rotateBitmap(
+            BitmapFactory.decodeFile(imgFile?.path),
+            isBackCamera
+        )
+
+        binding.previewImage.setImageBitmap(result)
+    }
+
+    private fun pickImageFromGallery() {
+        val intent = Intent().apply {
+            action = Intent.ACTION_GET_CONTENT
+            type = "image/*"
+        }
+
+        val chooser = Intent.createChooser(intent, getString(R.string.chooser_title))
+        launcherIntentGallery.launch(chooser)
+    }
+
+    private fun addStory() {
+        hideSoftKeyboard(activity as FragmentActivity)
+
+        with(binding) {
+            if (!descriptionInput.validateInput() || imgFile == null) {
+                showSnackbar(root, getString(R.string.validation_error))
+                return
+            }
+
+            viewModel.addNewStory(imgFile as File, descriptionInput.text.toString(), token)
+        }
+    }
+
+    private fun goBack() {
+        setFragmentResult(ADD_RESULT, bundleOf(
+            Pair("isSuccess", true)
+        ))
+
+        findNavController().navigateUp()
     }
 
     override fun onDestroyView() {
