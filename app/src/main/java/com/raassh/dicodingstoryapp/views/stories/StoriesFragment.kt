@@ -6,10 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,6 +21,7 @@ import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.adapter.ListStoriesAdapter
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.StoriesFragmentBinding
+import com.raassh.dicodingstoryapp.databinding.StoryItemBinding
 import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.visibility
 import com.raassh.dicodingstoryapp.views.newstory.NewStoryFragment
@@ -52,6 +56,7 @@ class StoriesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         token = StoriesFragmentArgs.fromBundle(arguments as Bundle).token
+        postponeEnterTransition()
 
         setFragmentResultListener(NewStoryFragment.ADD_RESULT) { _, bundle ->
             if (bundle.getBoolean("isSuccess")) {
@@ -91,11 +96,14 @@ class StoriesFragment : Fragment() {
             stories.observe(viewLifecycleOwner) {
                 setStoriesAdapter(ArrayList(it))
                 binding.noDataText.visibility = visibility(it.isEmpty())
+                (view.parent as? ViewGroup)?.doOnPreDraw {
+                    startPostponedEnterTransition()
+                }
             }
 
             error.observe(viewLifecycleOwner) {
-                it.getContentIfNotHandled()?.let {
-                    showSnackbar(binding.root, it, getString(R.string.retry)) {
+                it.getContentIfNotHandled()?.let { message ->
+                    showSnackbar(binding.root, message, getString(R.string.retry)) {
                         viewModel.getAllStories()
                     }
                 }
@@ -120,10 +128,19 @@ class StoriesFragment : Fragment() {
     private fun setStoriesAdapter(stories: ArrayList<ListStoryItem>) {
         binding.listStory.adapter = ListStoriesAdapter(stories).apply {
             setOnItemClickCallback(object : ListStoriesAdapter.OnItemClickCallback {
-                override fun onItemClicked(story: ListStoryItem) {
+                override fun onItemClicked(story: ListStoryItem, storyBinding: StoryItemBinding) {
+                    val extras = FragmentNavigatorExtras(
+                        storyBinding.storyImage to getString(R.string.story_image, story.id),
+                        storyBinding.storyUser to getString(R.string.story_user, story.id)
+                    )
+
                     view?.findNavController()?.navigate(
-                        StoriesFragmentDirections
-                            .actionStoriesFragmentToStoryDetailFragment(story)
+                        R.id.action_storiesFragment_to_storyDetailFragment,
+                        bundleOf(
+                            "story" to story
+                        ),
+                        null,
+                        extras
                     )
                 }
             })

@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -13,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestListener
 import com.google.android.material.snackbar.Snackbar
 import com.raassh.dicodingstoryapp.R
 import java.io.ByteArrayOutputStream
@@ -54,9 +56,10 @@ fun visibility(visible: Boolean) = if (visible) {
     View.INVISIBLE
 }
 
-fun ImageView.loadImage(url: String?) {
+fun ImageView.loadImage(url: String?, listener: RequestListener<Drawable>) {
     Glide.with(this.context)
         .load(url)
+        .listener(listener)
         .centerCrop()
         .into(this)
 }
