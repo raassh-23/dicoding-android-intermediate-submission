@@ -3,7 +3,6 @@ package com.raassh.dicodingstoryapp.widget
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -38,7 +37,6 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
         showLoading(false)
 
         sharedViewModel.getToken().observe(this) {
-            Log.d("TAG", "onCreate: $it")
             if (it.isNotEmpty()) {
                 showWidget()
             }
@@ -107,7 +105,7 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
     private fun showWidget() {
         // It is the responsibility of the configuration activity to update the app widget
         val appWidgetManager = AppWidgetManager.getInstance(this)
-        updateAppWidget(this, appWidgetManager, appWidgetId)
+        StoriesWidget.updateAppWidget(this, appWidgetManager, appWidgetId)
 
         // Make sure we pass back the original appWidgetId
         val resultValue = Intent().apply {

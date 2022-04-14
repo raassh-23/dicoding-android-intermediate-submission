@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.raassh.dicodingstoryapp.R
-import com.raassh.dicodingstoryapp.adapter.ListStoriesAdapter
+import com.raassh.dicodingstoryapp.data.adapter.ListStoriesAdapter
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.StoriesFragmentBinding
 import com.raassh.dicodingstoryapp.databinding.StoryItemBinding

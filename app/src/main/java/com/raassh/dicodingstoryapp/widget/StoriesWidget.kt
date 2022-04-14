@@ -1,65 +1,75 @@
 package com.raassh.dicodingstoryapp.widget
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.util.Log
+import android.content.Intent
+import android.os.Build
 import android.widget.RemoteViews
+import android.widget.Toast
+import androidx.core.net.toUri
 import com.raassh.dicodingstoryapp.R
-import com.raassh.dicodingstoryapp.data.SessionPreferences
-import com.raassh.dicodingstoryapp.views.dataStore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
-/**
- * Implementation of App Widget functionality.
- * App Widget Configuration implemented in [StoriesWidgetConfigureActivity]
- */
 class StoriesWidget : AppWidgetProvider() {
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        // There may be multiple widgets active, so update all of them
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
     }
 
-    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
-        // When the user deletes the widget, delete the preference associated with it.
-    }
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        if (intent.action != null) {
+            if (intent.action == TOAST_ACTION) {
+                val storyUser = intent.getStringExtra(EXTRA_ITEM)
+                    ?: context.getString(R.string.default_user)
 
-    override fun onEnabled(context: Context) {
-        // Enter relevant functionality for when the first widget is created
-    }
-
-    override fun onDisabled(context: Context) {
-        // Enter relevant functionality for when the last widget is disabled
-    }
-}
-
-internal fun updateAppWidget(
-    context: Context,
-    appWidgetManager: AppWidgetManager,
-    appWidgetId: Int
-) {
-    var widgetText = ""
-    val pref = SessionPreferences.getInstance(context.dataStore)
-    CoroutineScope(Dispatchers.Main).launch {
-        pref.getSavedToken().collect {
-            widgetText = it
-            Log.d("TAG", "updateAppWidget: $it")
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.stories_content_description, storyUser),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
-    // Construct the RemoteViews object
-    val views = RemoteViews(context.packageName, R.layout.stories_widget)
-    views.setTextViewText(R.id.banner_text, widgetText)
+    companion object {
+        private const val TOAST_ACTION = "com.raassh.dicodingstoryapp.widget.TOAST_ACTION"
+        const val EXTRA_ITEM = "com.raassh.dicodingstoryapp.widget.EXTRA_ITEM"
 
-    // Instruct the widget manager to update the widget
-    appWidgetManager.updateAppWidget(appWidgetId, views)
+        fun updateAppWidget(
+            context: Context,
+            appWidgetManager: AppWidgetManager,
+            appWidgetId: Int
+        ) {
+            val intent = Intent(context, StoriesWidgetService::class.java).apply {
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                data = this.toUri(Intent.URI_INTENT_SCHEME).toUri()
+            }
+
+            val toastIntent = Intent(context, StoriesWidget::class.java)
+            toastIntent.action = TOAST_ACTION
+            toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+
+            val toastPendingIntent = PendingIntent.getBroadcast(
+                context, 0, toastIntent,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+                else 0
+            )
+
+            val views = RemoteViews(context.packageName, R.layout.stories_widget).apply {
+                setRemoteAdapter(R.id.stack_view, intent)
+                setEmptyView(R.id.stack_view, R.id.empty_view)
+                setPendingIntentTemplate(R.id.stack_view, toastPendingIntent)
+            }
+
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+        }
+    }
 }

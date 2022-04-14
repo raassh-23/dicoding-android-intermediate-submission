@@ -48,4 +48,5 @@
     <string name="configure">Pengaturan</string>
     <string name="add_widget">Tambah Widget</string>
     <string name="app_widget_description">App widget untuk menampilkan semua story</string>
+    <string name="default_user">User Tak Dikenal</string>
 </resources>

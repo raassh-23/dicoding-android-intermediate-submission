@@ -43,9 +43,10 @@
     <string name="setting">Language Setting</string>
     <string name="camera_fail">Opening camera failed</string>
     <string name="load_picture_success">Picture successfully loaded</string>
-    <string name="appwidget_text" translatable="false">EXAMPLE</string>
+    <string name="appwidget_text" translatable="false">Stories Widget</string>
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">App widget to show all story</string>
     <string name="widget_login_text">Please login before using widget</string>
+    <string name="default_user">Unknown User</string>
 </resources>

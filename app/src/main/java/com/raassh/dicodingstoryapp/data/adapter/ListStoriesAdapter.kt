@@ -1,4 +1,4 @@
-package com.raassh.dicodingstoryapp.adapter
+package com.raassh.dicodingstoryapp.data.adapter
 
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
