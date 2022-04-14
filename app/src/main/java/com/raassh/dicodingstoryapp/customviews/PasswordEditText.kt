@@ -2,7 +2,6 @@ package com.raassh.dicodingstoryapp.customviews
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.text.InputType
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet

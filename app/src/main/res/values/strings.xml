@@ -49,4 +49,6 @@
     <string name="app_widget_description">App widget to show all story</string>
     <string name="widget_login_text">Please login before using widget</string>
     <string name="default_user">Unknown User</string>
+    <string name="auth" translatable="false">Bearer %1$s</string>
+    <string name="widget_empty_data">Data is empty or failed to get data</string>
 </resources>

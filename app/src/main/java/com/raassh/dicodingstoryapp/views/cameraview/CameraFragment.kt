@@ -89,8 +89,8 @@ class CameraFragment : Fragment() {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     setFragmentResult(
                         CAMERA_RESULT, bundleOf(
-                            "picture" to outputFileResults.savedUri,
-                            "isBackCamera" to (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA)
+                            PICTURE to outputFileResults.savedUri,
+                            IS_BACK_CAMERA to (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA)
                         )
                     )
 
@@ -138,5 +138,7 @@ class CameraFragment : Fragment() {
 
     companion object {
         const val CAMERA_RESULT = "camera_result"
+        const val PICTURE = "picture"
+        const val IS_BACK_CAMERA = "is_back_camera"
     }
 }

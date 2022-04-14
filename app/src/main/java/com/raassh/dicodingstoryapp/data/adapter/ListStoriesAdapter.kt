@@ -13,8 +13,8 @@ import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.StoryItemBinding
 import com.raassh.dicodingstoryapp.misc.loadImage
 
-class ListStoriesAdapter(private val listStories: ArrayList<ListStoryItem>)
-    : RecyclerView.Adapter<ListStoriesAdapter.ViewHolder>() {
+class ListStoriesAdapter(private val listStories: ArrayList<ListStoryItem>) :
+    RecyclerView.Adapter<ListStoriesAdapter.ViewHolder>() {
     private var onItemClickCallback: OnItemClickCallback? = null
 
     interface OnItemClickCallback {
@@ -34,7 +34,7 @@ class ListStoriesAdapter(private val listStories: ArrayList<ListStoryItem>)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val story =listStories[position]
+        val story = listStories[position]
 
         holder.apply {
             binding.apply {
@@ -61,7 +61,8 @@ class ListStoriesAdapter(private val listStories: ArrayList<ListStoryItem>)
                 storyImage.contentDescription = itemView.context.getString(
                     R.string.stories_content_description, story.name
                 )
-                storyImage.transitionName = itemView.context.getString(R.string.story_image, story.id)
+                storyImage.transitionName =
+                    itemView.context.getString(R.string.story_image, story.id)
                 storyUser.text = itemView.context.getString(R.string.stories_user, story.name)
                 storyUser.transitionName = itemView.context.getString(R.string.story_user, story.id)
             }

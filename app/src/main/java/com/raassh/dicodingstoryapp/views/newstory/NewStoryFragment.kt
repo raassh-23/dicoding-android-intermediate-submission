@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.*
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
@@ -129,8 +127,8 @@ class NewStoryFragment : Fragment() {
 
     private fun showCameraResult(bundle: Bundle) {
         showSnackbar(binding.root, getString(R.string.take_picture_success))
-        val uri = bundle.getParcelable<Uri>("picture") as Uri
-        val isBackCamera = bundle.get("isBackCamera") as Boolean
+        val uri = bundle.getParcelable<Uri>(CameraFragment.PICTURE) as Uri
+        val isBackCamera = bundle.get(CameraFragment.IS_BACK_CAMERA) as Boolean
 
         imgFile = uriToFile(uri, context as Context)
         val result = rotateBitmap(
@@ -160,14 +158,20 @@ class NewStoryFragment : Fragment() {
                 return
             }
 
-            viewModel.addNewStory(imgFile as File, descriptionInput.text.toString(), token)
+            viewModel.addNewStory(
+                imgFile as File,
+                descriptionInput.text.toString(),
+                getString(R.string.auth, token)
+            )
         }
     }
 
     private fun goBack() {
-        setFragmentResult(ADD_RESULT, bundleOf(
-            Pair("isSuccess", true)
-        ))
+        setFragmentResult(
+            ADD_RESULT, bundleOf(
+                IS_SUCCESS to true
+            )
+        )
 
         findNavController().navigateUp()
     }
@@ -199,5 +203,6 @@ class NewStoryFragment : Fragment() {
         }
 
         const val ADD_RESULT = "add_result"
+        const val IS_SUCCESS = "is_success"
     }
 }

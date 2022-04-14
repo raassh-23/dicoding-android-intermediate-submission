@@ -1,6 +1,5 @@
 package com.raassh.dicodingstoryapp.misc
 
-import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -16,7 +15,6 @@ import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestListener
 import com.google.android.material.snackbar.Snackbar
-import com.raassh.dicodingstoryapp.R
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -65,11 +63,13 @@ fun ImageView.loadImage(url: String?, listener: RequestListener<Drawable>) {
 }
 
 fun String.withDateFormat(): String {
-    val format = SimpleDateFormat(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        "yyyy-MM-dd'T'HH:mm:ss.SSSX"
-    } else {
-        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-    }, Locale.US)
+    val format = SimpleDateFormat(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            "yyyy-MM-dd'T'HH:mm:ss.SSSX"
+        } else {
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        }, Locale.US
+    )
 
     val date = format.parse(this) as Date
     return DateFormat.getDateInstance(DateFormat.FULL).format(date)

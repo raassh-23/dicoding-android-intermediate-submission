@@ -14,11 +14,11 @@ import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.data.SessionPreferences
 import com.raassh.dicodingstoryapp.databinding.LoginFragmentBinding
-import com.raassh.dicodingstoryapp.views.SharedViewModel
-import com.raassh.dicodingstoryapp.views.dataStore
 import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
 import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.visibility
+import com.raassh.dicodingstoryapp.views.SharedViewModel
+import com.raassh.dicodingstoryapp.views.dataStore
 import com.raassh.dicodingstoryapp.views.register.RegisterFragment
 
 class LoginFragment : Fragment() {
@@ -49,7 +49,7 @@ class LoginFragment : Fragment() {
         showLoading(false)
 
         setFragmentResultListener(RegisterFragment.REGISTER_RESULT) { _, bundle ->
-            val email = bundle.getString("email", "")
+            val email = bundle.getString(RegisterFragment.EMAIL, "")
             binding.emailInput.setText(email)
         }
 

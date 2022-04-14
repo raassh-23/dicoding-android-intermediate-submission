@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.raassh.dicodingstoryapp.data.api.ApiConfig
+import com.raassh.dicodingstoryapp.data.api.ApiService
 import com.raassh.dicodingstoryapp.data.api.GenericResponse
 import com.raassh.dicodingstoryapp.misc.Event
 import com.raassh.dicodingstoryapp.misc.reduceFileImage
@@ -27,16 +28,15 @@ class NewStoryViewModel : ViewModel() {
     private val _error = MutableLiveData<Event<String>>()
     val error: LiveData<Event<String>> = _error
 
-    fun addNewStory(image: File, description: String, token: String) {
+    fun addNewStory(image: File, description: String, auth: String) {
         val reducedImage = reduceFileImage(image)
 
         val descPart = description.toRequestBody("text/plain".toMediaType())
         val imageMultiPart = MultipartBody.Part.createFormData(
-            "photo",
+            ApiService.PHOTO_FIELD,
             reducedImage.name,
             reducedImage.asRequestBody("image/jpeg".toMediaType())
         )
-        val auth = "Bearer $token"
 
         _isLoading.value = true
         ApiConfig.getApiService().addStory(imageMultiPart, descPart, auth)

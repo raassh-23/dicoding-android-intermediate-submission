@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val navController = findNavController(binding.container.id)
 
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.logout -> {
                 logout(navController)
             }
@@ -76,7 +76,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.saveToken("")
 
         // ref: https://github.com/android/architecture-components-samples/issues/767
-        val navHostFragment = supportFragmentManager.findFragmentById(binding.container.id) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(binding.container.id) as NavHostFragment
         val inflater = navHostFragment.navController.navInflater
         val graph = inflater.inflate(R.navigation.main_navigation)
         graph.setStartDestination(R.id.loginFragment)

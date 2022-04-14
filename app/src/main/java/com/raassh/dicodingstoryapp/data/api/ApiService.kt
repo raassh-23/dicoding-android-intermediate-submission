@@ -29,6 +29,10 @@ interface ApiService {
     fun addStory(
         @Part file: MultipartBody.Part,
         @Part("description") description: RequestBody,
-        @Header("Authorization") token: String
+        @Header("Authorization") auth: String
     ): Call<GenericResponse>
+
+    companion object {
+        const val PHOTO_FIELD = "photo"
+    }
 }

@@ -1,6 +1,5 @@
 package com.raassh.dicodingstoryapp.views.login
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -33,7 +32,10 @@ class LoginViewModel : ViewModel() {
                     val token = response.body()?.loginResult?.token ?: ""
                     _token.value = Event(token)
                 } else {
-                    val errorResponse = Gson().fromJson(response.errorBody()!!.charStream(), GenericResponse::class.java)
+                    val errorResponse = Gson().fromJson(
+                        response.errorBody()!!.charStream(),
+                        GenericResponse::class.java
+                    )
                     _error.value = Event(errorResponse.message)
                 }
             }

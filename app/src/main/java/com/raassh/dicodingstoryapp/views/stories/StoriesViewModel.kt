@@ -1,6 +1,5 @@
 package com.raassh.dicodingstoryapp.views.stories
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,7 +14,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class StoriesViewModel(private val token: String) : ViewModel() {
+class StoriesViewModel(private val auth: String) : ViewModel() {
     private val _stories = MutableLiveData<List<ListStoryItem>>()
     val stories: LiveData<List<ListStoryItem>> = _stories
 
@@ -32,7 +31,7 @@ class StoriesViewModel(private val token: String) : ViewModel() {
     fun getAllStories() {
         _isLoading.value = true
 
-        ApiConfig.getApiService().getAllStories("Bearer $token")
+        ApiConfig.getApiService().getAllStories(auth)
             .enqueue(object : Callback<StoriesResponse> {
                 override fun onResponse(
                     call: Call<StoriesResponse>,
@@ -43,7 +42,10 @@ class StoriesViewModel(private val token: String) : ViewModel() {
                     if (response.isSuccessful) {
                         _stories.value = response.body()?.listStory
                     } else {
-                        val errorResponse = Gson().fromJson(response.errorBody()!!.charStream(), GenericResponse::class.java)
+                        val errorResponse = Gson().fromJson(
+                            response.errorBody()!!.charStream(),
+                            GenericResponse::class.java
+                        )
                         _error.value = Event(errorResponse.message)
                     }
                 }
@@ -56,9 +58,9 @@ class StoriesViewModel(private val token: String) : ViewModel() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val token: String) : ViewModelProvider.Factory {
+    class Factory(private val auth: String) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return StoriesViewModel(token) as T
+            return StoriesViewModel(auth) as T
         }
     }
 }

@@ -30,7 +30,7 @@ class StoriesFragment : Fragment() {
     private var token = ""
 
     private val viewModel by viewModels<StoriesViewModel> {
-        StoriesViewModel.Factory(token)
+        StoriesViewModel.Factory(getString(R.string.auth, token))
     }
 
     private var _binding: StoriesFragmentBinding? = null
@@ -59,13 +59,14 @@ class StoriesFragment : Fragment() {
         postponeEnterTransition()
 
         setFragmentResultListener(NewStoryFragment.ADD_RESULT) { _, bundle ->
-            if (bundle.getBoolean("isSuccess")) {
+            if (bundle.getBoolean(NewStoryFragment.IS_SUCCESS)) {
                 storyAdded()
             }
         }
 
         val layoutManager = if (activity?.applicationContext
-                ?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                ?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT
+        ) {
             LinearLayoutManager(context)
         } else {
             GridLayoutManager(context, 2)

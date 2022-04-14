@@ -43,10 +43,10 @@
     <string name="setting">Pengaturan Bahasa</string>
     <string name="camera_fail">Kamera gagal dibuka</string>
     <string name="load_picture_success">Gambar berhasil dimuat</string>
-    <string name="appwidget_text">EXAMPLE</string>
     <string name="widget_login_text">Silahkan login sebelum menggunakan widget</string>
     <string name="configure">Pengaturan</string>
     <string name="add_widget">Tambah Widget</string>
     <string name="app_widget_description">App widget untuk menampilkan semua story</string>
     <string name="default_user">User Tak Dikenal</string>
+    <string name="widget_empty_data">Data tidak ada atau gagal diambil</string>
 </resources>

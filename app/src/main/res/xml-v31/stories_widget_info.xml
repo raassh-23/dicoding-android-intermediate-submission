@@ -11,5 +11,5 @@
     android:previewLayout="@layout/stories_widget"
     android:targetCellWidth="4"
     android:targetCellHeight="2"
-    android:updatePeriodMillis="86400000"
+    android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen" />

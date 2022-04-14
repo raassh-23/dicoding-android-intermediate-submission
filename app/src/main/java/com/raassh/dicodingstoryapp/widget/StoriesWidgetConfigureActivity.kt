@@ -3,10 +3,14 @@ package com.raassh.dicodingstoryapp.widget
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
+import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.data.SessionPreferences
 import com.raassh.dicodingstoryapp.databinding.StoriesWidgetConfigureBinding
 import com.raassh.dicodingstoryapp.misc.showSnackbar
@@ -23,12 +27,9 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
     }
     private val loginViewModel by viewModels<LoginViewModel>()
 
-
     public override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
 
-        // Set the result to CANCELED.  This will cause the widget host to cancel
-        // out of the widget placement if the user presses the back button.
         setResult(RESULT_CANCELED)
 
         binding = StoriesWidgetConfigureBinding.inflate(layoutInflater)
@@ -66,6 +67,21 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
         }
 
         binding.apply {
+            emailInput.setValidationCallback(object : EditTextWithValidation.InputValidation {
+                override val errorMessage: String
+                    get() = getString(R.string.email_validation_message)
+
+                override fun validate(input: String) = input.isNotEmpty()
+                        && Patterns.EMAIL_ADDRESS.matcher(input).matches()
+            })
+
+            passwordInput.setValidationCallback(object : EditTextWithValidation.InputValidation {
+                override val errorMessage: String
+                    get() = getString(R.string.password_validation_message)
+
+                override fun validate(input: String) = input.length >= 6
+            })
+
             login.setOnClickListener {
                 val isEmailValid = emailInput.validateInput()
                 val isPasswordValid = passwordInput.validateInput()
@@ -77,10 +93,8 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
 
                 loginViewModel.login(emailInput.text.toString(), passwordInput.text.toString())
             }
-
         }
 
-        // Find the widget id from the intent.
         val extras = intent.extras
         if (extras != null) {
             appWidgetId = extras.getInt(
@@ -88,7 +102,6 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
             )
         }
 
-        // If this activity was started with an intent without an app widget ID, finish with an error.
         if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish()
             return
@@ -103,11 +116,9 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
     }
 
     private fun showWidget() {
-        // It is the responsibility of the configuration activity to update the app widget
         val appWidgetManager = AppWidgetManager.getInstance(this)
         StoriesWidget.updateAppWidget(this, appWidgetManager, appWidgetId)
 
-        // Make sure we pass back the original appWidgetId
         val resultValue = Intent().apply {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
         }

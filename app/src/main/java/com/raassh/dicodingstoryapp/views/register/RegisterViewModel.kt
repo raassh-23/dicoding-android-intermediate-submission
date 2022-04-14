@@ -35,7 +35,10 @@ class RegisterViewModel : ViewModel() {
                         _isSuccess.value = Event(true)
                     } else {
                         // ref: https://stackoverflow.com/a/62513959/18277301
-                        val errorResponse = Gson().fromJson(response.errorBody()!!.charStream(), GenericResponse::class.java)
+                        val errorResponse = Gson().fromJson(
+                            response.errorBody()!!.charStream(),
+                            GenericResponse::class.java
+                        )
                         _error.value = Event(errorResponse.message)
                     }
                 }

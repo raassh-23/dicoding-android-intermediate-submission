@@ -22,7 +22,7 @@ internal class StoriesRemoteViewsFactory(private val context: Context) :
     private val stories = ArrayList<ListStoryItem>()
 
     override fun onCreate() {
-
+        //
     }
 
     override fun onDataSetChanged() {
@@ -36,7 +36,7 @@ internal class StoriesRemoteViewsFactory(private val context: Context) :
 
         try {
             val listStories = ApiConfig.getApiService()
-                .getAllStories("Bearer $token")
+                .getAllStories(context.getString(R.string.auth, token))
                 .execute()
                 .body()
                 ?.listStory as List<ListStoryItem>
@@ -49,7 +49,7 @@ internal class StoriesRemoteViewsFactory(private val context: Context) :
     }
 
     override fun onDestroy() {
-
+        //
     }
 
     override fun getCount() = stories.size

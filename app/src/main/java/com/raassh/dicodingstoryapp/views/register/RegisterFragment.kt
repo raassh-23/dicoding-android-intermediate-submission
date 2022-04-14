@@ -1,7 +1,6 @@
 package com.raassh.dicodingstoryapp.views.register
 
 import android.os.Bundle
-import android.text.TextUtils
 import android.transition.TransitionInflater
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -13,8 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
@@ -133,9 +130,11 @@ class RegisterFragment : Fragment() {
     private fun registered() {
         showSnackbar(binding.root, getString(R.string.register_success))
 
-        setFragmentResult(REGISTER_RESULT, bundleOf(
-            "email" to binding.emailInput.text.toString()
-        ))
+        setFragmentResult(
+            REGISTER_RESULT, bundleOf(
+                EMAIL to binding.emailInput.text.toString()
+            )
+        )
 
         findNavController().navigateUp()
     }
@@ -154,5 +153,6 @@ class RegisterFragment : Fragment() {
 
     companion object {
         const val REGISTER_RESULT = "register_result"
+        const val EMAIL = "email"
     }
 }
