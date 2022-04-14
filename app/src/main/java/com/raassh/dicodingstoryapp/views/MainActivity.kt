@@ -2,10 +2,13 @@ package com.raassh.dicodingstoryapp.views
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowInsets
+import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
@@ -21,8 +24,8 @@ import com.raassh.dicodingstoryapp.databinding.ActivityMainBinding
 internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "session")
 
 class MainActivity : AppCompatActivity() {
-    private val viewModel by viewModels<MainActivityViewModel> {
-        MainActivityViewModel.Factory(SessionPreferences.getInstance(dataStore))
+    private val viewModel by viewModels<SharedViewModel> {
+        SharedViewModel.Factory(SessionPreferences.getInstance(dataStore))
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -31,6 +34,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+        } else {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

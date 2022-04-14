@@ -1,24 +1,20 @@
 package com.raassh.dicodingstoryapp.views.login
 
 import android.os.Bundle
-import android.text.TextUtils
-import android.transition.TransitionInflater
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import androidx.datastore.core.DataStore
 import androidx.fragment.app.*
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.data.SessionPreferences
 import com.raassh.dicodingstoryapp.databinding.LoginFragmentBinding
-import com.raassh.dicodingstoryapp.views.MainActivityViewModel
+import com.raassh.dicodingstoryapp.views.SharedViewModel
 import com.raassh.dicodingstoryapp.views.dataStore
 import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
 import com.raassh.dicodingstoryapp.misc.showSnackbar
@@ -27,8 +23,8 @@ import com.raassh.dicodingstoryapp.views.register.RegisterFragment
 
 class LoginFragment : Fragment() {
     private val viewModel by viewModels<LoginViewModel>()
-    private val sharedViewModel by activityViewModels<MainActivityViewModel> {
-        MainActivityViewModel.Factory(SessionPreferences.getInstance(context?.dataStore as DataStore))
+    private val sharedViewModel by activityViewModels<SharedViewModel> {
+        SharedViewModel.Factory(SessionPreferences.getInstance(context?.dataStore as DataStore))
     }
 
     private var _binding: LoginFragmentBinding? = null
@@ -76,7 +72,7 @@ class LoginFragment : Fragment() {
                 override val errorMessage: String
                     get() = getString(R.string.email_validation_message)
 
-                override fun validate(input: String) = !TextUtils.isEmpty(input)
+                override fun validate(input: String) = input.isNotEmpty()
                         && Patterns.EMAIL_ADDRESS.matcher(input).matches()
             })
 
@@ -111,7 +107,7 @@ class LoginFragment : Fragment() {
         }
 
         sharedViewModel.getToken().observe(viewLifecycleOwner) {
-            if (!TextUtils.isEmpty(it)) {
+            if (it.isNotEmpty()) {
                 goToStories(it)
             }
         }

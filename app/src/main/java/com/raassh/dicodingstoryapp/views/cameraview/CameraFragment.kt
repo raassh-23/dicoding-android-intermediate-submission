@@ -3,11 +3,10 @@ package com.raassh.dicodingstoryapp.views.cameraview
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector

@@ -62,14 +62,14 @@ class RegisterFragment : Fragment() {
                 override val errorMessage: String
                     get() = getString(R.string.name_validation_message)
 
-                override fun validate(input: String) = !TextUtils.isEmpty(input)
+                override fun validate(input: String) = input.isNotEmpty()
             })
 
             emailInput.setValidationCallback(object : EditTextWithValidation.InputValidation {
                 override val errorMessage: String
                     get() = getString(R.string.email_validation_message)
 
-                override fun validate(input: String) = !TextUtils.isEmpty(input)
+                override fun validate(input: String) = input.isNotEmpty()
                         && Patterns.EMAIL_ADDRESS.matcher(input).matches()
             })
 

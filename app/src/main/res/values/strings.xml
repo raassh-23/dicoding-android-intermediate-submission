@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Dicoding Story App</string>
+    <string name="app_name" translatable="false">Story App</string>
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
     <string name="welcome">Welcome to Story App</string>
@@ -43,4 +43,9 @@
     <string name="setting">Language Setting</string>
     <string name="camera_fail">Opening camera failed</string>
     <string name="load_picture_success">Picture successfully loaded</string>
+    <string name="appwidget_text" translatable="false">EXAMPLE</string>
+    <string name="configure">Configure</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_widget_description">App widget to show all story</string>
+    <string name="widget_login_text">Please login before using widget</string>
 </resources>

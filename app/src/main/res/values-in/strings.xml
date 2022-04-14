@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Dicoding Story App</string>
     <string name="email_hint">Email</string>
     <string name="password_hint">Kata Sandi</string>
     <string name="welcome">Selamat datang di Story App</string>
@@ -44,4 +43,9 @@
     <string name="setting">Pengaturan Bahasa</string>
     <string name="camera_fail">Kamera gagal dibuka</string>
     <string name="load_picture_success">Gambar berhasil dimuat</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="widget_login_text">Silahkan login sebelum menggunakan widget</string>
+    <string name="configure">Pengaturan</string>
+    <string name="add_widget">Tambah Widget</string>
+    <string name="app_widget_description">App widget untuk menampilkan semua story</string>
 </resources>

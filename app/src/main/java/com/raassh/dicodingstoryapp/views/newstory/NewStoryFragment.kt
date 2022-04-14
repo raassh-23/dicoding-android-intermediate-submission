@@ -90,7 +90,7 @@ class NewStoryFragment : Fragment() {
                 override val errorMessage: String
                     get() = getString(R.string.desc_validation_message)
 
-                override fun validate(input: String) = !TextUtils.isEmpty(input)
+                override fun validate(input: String) = input.isNotEmpty()
             })
 
             cameraButton.setOnClickListener {

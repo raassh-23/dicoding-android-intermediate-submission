@@ -58,7 +58,6 @@ class StoriesViewModel(private val token: String) : ViewModel() {
     @Suppress("UNCHECKED_CAST")
     class Factory(private val token: String) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            Log.d("TAG", "create: $token")
             return StoriesViewModel(token) as T
         }
     }
