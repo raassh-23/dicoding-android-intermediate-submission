@@ -19,8 +19,7 @@ import com.raassh.dicodingstoryapp.misc.loadImage
 import com.raassh.dicodingstoryapp.misc.withDateFormat
 
 class StoryDetailFragment : Fragment() {
-    private var _binding: StoryDetailFragmentBinding? = null
-    private val binding get() = _binding!!
+    private var binding: StoryDetailFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +35,9 @@ class StoryDetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = StoryDetailFragmentBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View? {
+        binding = StoryDetailFragmentBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,7 +50,7 @@ class StoryDetailFragment : Fragment() {
     }
 
     private fun showStory(story: ListStoryItem) {
-        binding.apply {
+        binding?.apply {
             storyUser.transitionName = getString(R.string.story_user, story.id)
             storyUser.text = getString(R.string.stories_user, story.name)
             storyUploaded.text =
@@ -88,6 +87,6 @@ class StoryDetailFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        binding = null
     }
 }

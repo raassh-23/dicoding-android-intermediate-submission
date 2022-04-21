@@ -27,8 +27,7 @@ class LoginFragment : Fragment() {
         SharedViewModel.Factory(SessionPreferences.getInstance(context?.dataStore as DataStore))
     }
 
-    private var _binding: LoginFragmentBinding? = null
-    private val binding get() = _binding!!
+    private var binding: LoginFragmentBinding? = null
 
     override fun onResume() {
         super.onResume()
@@ -38,9 +37,9 @@ class LoginFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = LoginFragmentBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View? {
+        binding = LoginFragmentBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,10 +49,10 @@ class LoginFragment : Fragment() {
 
         setFragmentResultListener(RegisterFragment.REGISTER_RESULT) { _, bundle ->
             val email = bundle.getString(RegisterFragment.EMAIL, "")
-            binding.emailInput.setText(email)
+            binding?.emailInput?.setText(email)
         }
 
-        binding.apply {
+        binding?.apply {
             goToRegister.setOnClickListener {
                 findNavController().navigate(
                     R.id.action_loginFragment_to_registerFragment,
@@ -94,14 +93,20 @@ class LoginFragment : Fragment() {
             }
 
             token.observe(viewLifecycleOwner) {
-                it.getContentIfNotHandled()?.let {
-                    loggedIn(it)
+                it.getContentIfNotHandled()?.let { token ->
+                    loggedIn(token)
                 }
             }
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    showSnackbar(binding.root, message)
+                    val root = binding?.root ?: return@observe
+
+                    if (message.isEmpty()) {
+                        showSnackbar(root, getString(R.string.generic_error))
+                    } else {
+                        showSnackbar(root, message)
+                    }
                 }
             }
         }
@@ -116,7 +121,7 @@ class LoginFragment : Fragment() {
     private fun tryLogin() {
         hideSoftKeyboard(activity as FragmentActivity)
 
-        with(binding) {
+        with(binding ?: return) {
             val isEmailValid = emailInput.validateInput()
             val isPasswordValid = passwordInput.validateInput()
 
@@ -131,7 +136,9 @@ class LoginFragment : Fragment() {
 
     private fun loggedIn(token: String) {
         sharedViewModel.saveToken(token)
-        showSnackbar(binding.root, getString(R.string.login_success))
+
+        val root = binding?.root ?: return
+        showSnackbar(root, getString(R.string.login_success))
     }
 
     private fun goToStories(token: String) {
@@ -143,7 +150,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.apply {
+        binding?.apply {
             loginGroup.visibility = visibility(!isLoading)
             loginLoadingGroup.visibility = visibility(isLoading)
         }
@@ -151,6 +158,6 @@ class LoginFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        binding = null
     }
 }

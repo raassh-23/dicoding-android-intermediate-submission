@@ -33,8 +33,7 @@ class StoriesFragment : Fragment() {
         StoriesViewModel.Factory(getString(R.string.auth, token))
     }
 
-    private var _binding: StoriesFragmentBinding? = null
-    private val binding get() = _binding!!
+    private var binding: StoriesFragmentBinding? = null
 
     override fun onResume() {
         super.onResume()
@@ -47,9 +46,9 @@ class StoriesFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = StoriesFragmentBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View? {
+        binding = StoriesFragmentBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,7 +71,7 @@ class StoriesFragment : Fragment() {
             GridLayoutManager(context, 2)
         }
 
-        binding.apply {
+        binding?.apply {
             listStory.apply {
                 setHasFixedSize(true)
                 this.layoutManager = layoutManager
@@ -96,7 +95,7 @@ class StoriesFragment : Fragment() {
 
             stories.observe(viewLifecycleOwner) {
                 setStoriesAdapter(ArrayList(it))
-                binding.noDataText.visibility = visibility(it.isEmpty())
+                binding?.noDataText?.visibility = visibility(it.isEmpty())
                 (view.parent as? ViewGroup)?.doOnPreDraw {
                     startPostponedEnterTransition()
                 }
@@ -104,8 +103,20 @@ class StoriesFragment : Fragment() {
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    showSnackbar(binding.root, message, getString(R.string.retry)) {
-                        viewModel.getAllStories()
+                    val root = binding?.root ?: return@observe
+
+                    if (message.isEmpty()) {
+                        showSnackbar(
+                            root,
+                            getString(R.string.generic_error),
+                            getString(R.string.retry)
+                        ) {
+                            viewModel.getAllStories()
+                        }
+                    } else {
+                        showSnackbar(root, message, getString(R.string.retry)) {
+                            viewModel.getAllStories()
+                        }
                     }
                 }
             }
@@ -113,9 +124,10 @@ class StoriesFragment : Fragment() {
     }
 
     private fun storyAdded() {
-        showSnackbar(binding.root, getString(R.string.upload_success))
-
         viewModel.getAllStories()
+
+        val root = binding?.root ?: return
+        showSnackbar(root, getString(R.string.upload_success))
     }
 
     private fun goToNewStory() {
@@ -127,7 +139,7 @@ class StoriesFragment : Fragment() {
     }
 
     private fun setStoriesAdapter(stories: ArrayList<ListStoryItem>) {
-        binding.listStory.adapter = ListStoriesAdapter(stories).apply {
+        binding?.listStory?.adapter = ListStoriesAdapter(stories).apply {
             setOnItemClickCallback(object : ListStoriesAdapter.OnItemClickCallback {
                 override fun onItemClicked(story: ListStoryItem, storyBinding: StoryItemBinding) {
                     val extras = FragmentNavigatorExtras(
@@ -149,7 +161,7 @@ class StoriesFragment : Fragment() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.apply {
+        binding?.apply {
             listStory.visibility = visibility(!isLoading)
             storiesLoadingGroup.visibility = visibility(isLoading)
         }
@@ -157,6 +169,6 @@ class StoriesFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        binding = null
     }
 }

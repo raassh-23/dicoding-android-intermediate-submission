@@ -3,11 +3,11 @@ package com.raassh.dicodingstoryapp.views.cameraview
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.*
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -25,8 +25,7 @@ import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.timeStamp
 
 class CameraFragment : Fragment() {
-    private var _binding: FragmentCameraBinding? = null
-    private val binding get() = _binding!!
+    private var binding: FragmentCameraBinding? = null
 
     private var imageCapture: ImageCapture? = null
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -40,21 +39,21 @@ class CameraFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentCameraBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View? {
+        binding = FragmentCameraBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
+        binding?.apply {
             captureImage.setOnClickListener {
                 takePhoto()
             }
 
             switchCamera.setOnClickListener {
-                cameraSelector = if (cameraSelector.equals(CameraSelector.DEFAULT_BACK_CAMERA)) {
+                cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
                     CameraSelector.DEFAULT_FRONT_CAMERA
                 } else {
                     CameraSelector.DEFAULT_BACK_CAMERA
@@ -98,7 +97,8 @@ class CameraFragment : Fragment() {
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                    showSnackbar(binding.root, getString(R.string.take_picture_fail))
+                    val root = binding?.root ?: return
+                    showSnackbar(root, getString(R.string.take_picture_fail))
                 }
             }
         )
@@ -110,8 +110,8 @@ class CameraFragment : Fragment() {
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
 
-            val preview = Preview.Builder().build().also {
-                it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+            val preview = Preview.Builder().build().apply {
+                setSurfaceProvider(binding?.viewFinder?.surfaceProvider)
             }
 
             imageCapture = ImageCapture.Builder().build()
@@ -125,7 +125,8 @@ class CameraFragment : Fragment() {
                     imageCapture
                 )
             } catch (e: Exception) {
-                showSnackbar(binding.root, getString(R.string.camera_fail))
+                val root = binding?.root ?: return@addListener
+                showSnackbar(root, getString(R.string.camera_fail))
             }
         }, ContextCompat.getMainExecutor(context as Context))
     }
@@ -133,7 +134,7 @@ class CameraFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        binding = null
     }
 
     companion object {

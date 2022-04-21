@@ -50,11 +50,18 @@ class NewStoryViewModel : ViewModel() {
                     if (response.isSuccessful) {
                         _isSuccess.value = Event(true)
                     } else {
-                        val errorResponse = Gson().fromJson(
-                            response.errorBody()!!.charStream(),
-                            GenericResponse::class.java
-                        )
-                        _error.value = Event(errorResponse.message)
+                        val errorBody = response.errorBody()
+
+                        if (errorBody != null) {
+                            val errorResponse = Gson().fromJson(
+                                errorBody.charStream(),
+                                GenericResponse::class.java
+                            )
+
+                            _error.value = Event(errorResponse.message)
+                        } else {
+                            _error.value = Event("")
+                        }
                     }
                 }
 

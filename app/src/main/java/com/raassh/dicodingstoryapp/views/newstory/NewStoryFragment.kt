@@ -27,8 +27,7 @@ import java.io.File
 class NewStoryFragment : Fragment() {
     private val viewModel by viewModels<NewStoryViewModel>()
 
-    private var _binding: NewStoryFragmentBinding? = null
-    private val binding get() = _binding!!
+    private var binding: NewStoryFragmentBinding? = null
 
     private var imgFile: File? = null
     private var token = ""
@@ -37,7 +36,11 @@ class NewStoryFragment : Fragment() {
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         if (!allPermissionGranted()) {
-            showSnackbar(binding.root, getString(R.string.permission_denied))
+            val root = binding?.root
+            if (root != null) {
+                showSnackbar(root, getString(R.string.permission_denied))
+            }
+
             findNavController().navigateUp()
         }
     }
@@ -46,10 +49,12 @@ class NewStoryFragment : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == AppCompatActivity.RESULT_OK) {
-            showSnackbar(binding.root, getString(R.string.load_picture_success))
             val selectedImage = it.data?.data as Uri
             imgFile = uriToFile(selectedImage, context as Context)
-            binding.previewImage.setImageURI(selectedImage)
+            binding?.previewImage?.setImageURI(selectedImage)
+
+            val root = binding?.root ?: return@registerForActivityResult
+            showSnackbar(root, getString(R.string.load_picture_success))
         }
     }
 
@@ -64,9 +69,9 @@ class NewStoryFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = NewStoryFragmentBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View? {
+        binding = NewStoryFragmentBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,7 +88,7 @@ class NewStoryFragment : Fragment() {
             showCameraResult(bundle)
         }
 
-        binding.apply {
+        binding?.apply {
             descriptionInput.setValidationCallback(object : EditTextWithValidation.InputValidation {
                 override val errorMessage: String
                     get() = getString(R.string.desc_validation_message)
@@ -119,14 +124,19 @@ class NewStoryFragment : Fragment() {
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    showSnackbar(binding.root, message)
+                    val root = binding?.root ?: return@observe
+
+                    if (message.isEmpty()) {
+                        showSnackbar(root, getString(R.string.generic_error))
+                    } else {
+                        showSnackbar(root, message)
+                    }
                 }
             }
         }
     }
 
     private fun showCameraResult(bundle: Bundle) {
-        showSnackbar(binding.root, getString(R.string.take_picture_success))
         val uri = bundle.getParcelable<Uri>(CameraFragment.PICTURE) as Uri
         val isBackCamera = bundle.get(CameraFragment.IS_BACK_CAMERA) as Boolean
 
@@ -136,7 +146,10 @@ class NewStoryFragment : Fragment() {
             isBackCamera
         )
 
-        binding.previewImage.setImageBitmap(result)
+        binding?.previewImage?.setImageBitmap(result)
+
+        val root = binding?.root ?: return
+        showSnackbar(root, getString(R.string.take_picture_success))
     }
 
     private fun pickImageFromGallery() {
@@ -152,7 +165,7 @@ class NewStoryFragment : Fragment() {
     private fun addStory() {
         hideSoftKeyboard(activity as FragmentActivity)
 
-        with(binding) {
+        with(binding ?: return) {
             if (!descriptionInput.validateInput() || imgFile == null) {
                 showSnackbar(root, getString(R.string.validation_error))
                 return
@@ -178,7 +191,7 @@ class NewStoryFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        binding = null
     }
 
     private fun allPermissionGranted() = REQUIRED_PERMISSIONS.all {
@@ -189,7 +202,7 @@ class NewStoryFragment : Fragment() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.apply {
+        binding?.apply {
             uploadGroup.visibility = visibility(!isLoading)
             uploadLoadingGroup.visibility = visibility(isLoading)
         }

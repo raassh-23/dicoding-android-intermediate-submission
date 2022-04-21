@@ -42,11 +42,18 @@ class StoriesViewModel(private val auth: String) : ViewModel() {
                     if (response.isSuccessful) {
                         _stories.value = response.body()?.listStory
                     } else {
-                        val errorResponse = Gson().fromJson(
-                            response.errorBody()!!.charStream(),
-                            GenericResponse::class.java
-                        )
-                        _error.value = Event(errorResponse.message)
+                        val errorBody = response.errorBody()
+
+                        if (errorBody != null) {
+                            val errorResponse = Gson().fromJson(
+                                errorBody.charStream(),
+                                GenericResponse::class.java
+                            )
+
+                            _error.value = Event(errorResponse.message)
+                        } else {
+                            _error.value = Event("")
+                        }
                     }
                 }
 

@@ -23,8 +23,7 @@ import com.raassh.dicodingstoryapp.misc.visibility
 class RegisterFragment : Fragment() {
     private val viewModel by viewModels<RegisterViewModel>()
 
-    private var _binding: RegisterFragmentBinding? = null
-    private val binding get() = _binding!!
+    private var binding: RegisterFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +39,9 @@ class RegisterFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = RegisterFragmentBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View? {
+        binding = RegisterFragmentBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,7 +49,7 @@ class RegisterFragment : Fragment() {
 
         showLoading(false)
 
-        binding.apply {
+        binding?.apply {
             goToLogin.setOnClickListener {
                 findNavController().navigateUp()
             }
@@ -97,7 +96,13 @@ class RegisterFragment : Fragment() {
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    showSnackbar(binding.root, message)
+                    val root = binding?.root ?: return@observe
+
+                    if (message.isEmpty()) {
+                        showSnackbar(root, getString(R.string.generic_error))
+                    } else {
+                        showSnackbar(root, message)
+                    }
                 }
             }
         }
@@ -106,7 +111,7 @@ class RegisterFragment : Fragment() {
     private fun tryRegister() {
         hideSoftKeyboard(activity as FragmentActivity)
 
-        with(binding) {
+        with(binding ?: return) {
             // note to self:
             // doing it like this will validate all input
             // instead of stopping after the first invalid
@@ -128,11 +133,15 @@ class RegisterFragment : Fragment() {
     }
 
     private fun registered() {
-        showSnackbar(binding.root, getString(R.string.register_success))
+        val root = binding?.root
+
+        if (root != null) {
+            showSnackbar(root, getString(R.string.register_success))
+        }
 
         setFragmentResult(
             REGISTER_RESULT, bundleOf(
-                EMAIL to binding.emailInput.text.toString()
+                EMAIL to binding?.emailInput?.text.toString()
             )
         )
 
@@ -140,7 +149,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.apply {
+        binding?.apply {
             registerGroup.visibility = visibility(!isLoading)
             registerLoadingGroup.visibility = visibility(isLoading)
         }
@@ -148,7 +157,7 @@ class RegisterFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        binding = null
     }
 
     companion object {

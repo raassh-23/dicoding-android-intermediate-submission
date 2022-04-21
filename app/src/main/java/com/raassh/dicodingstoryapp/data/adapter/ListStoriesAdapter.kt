@@ -36,40 +36,41 @@ class ListStoriesAdapter(private val listStories: ArrayList<ListStoryItem>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val story = listStories[position]
 
-        holder.apply {
-            binding.apply {
-                storyImage.loadImage(story.photoUrl, object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        return false
-                    }
+        holder.itemView.setOnClickListener {
+            onItemClickCallback?.onItemClicked(story, holder.binding)
+        }
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        return false
-                    }
-                })
-                storyImage.contentDescription = itemView.context.getString(
-                    R.string.stories_content_description, story.name
-                )
-                storyImage.transitionName =
-                    itemView.context.getString(R.string.story_image, story.id)
-                storyUser.text = itemView.context.getString(R.string.stories_user, story.name)
-                storyUser.transitionName = itemView.context.getString(R.string.story_user, story.id)
-            }
+        holder.binding.apply {
+            storyImage.loadImage(story.photoUrl, object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
 
-            itemView.setOnClickListener {
-                onItemClickCallback?.onItemClicked(story, binding)
-            }
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
+            })
+
+            storyImage.contentDescription = holder.itemView.context.getString(
+                R.string.stories_content_description, story.name
+            )
+
+            storyImage.transitionName =
+                holder.itemView.context.getString(R.string.story_image, story.id)
+            storyUser.text = holder.itemView.context.getString(R.string.stories_user, story.name)
+            storyUser.transitionName =
+                holder.itemView.context.getString(R.string.story_user, story.id)
         }
     }
 
