@@ -79,5 +79,8 @@
             android:name="token"
             android:defaultValue=""
             app:argType="string" />
+        <action
+            android:id="@+id/action_storiesWithMapsFragment_to_storyDetailFragment"
+            app:destination="@id/storyDetailFragment" />
     </fragment>
 </navigation>

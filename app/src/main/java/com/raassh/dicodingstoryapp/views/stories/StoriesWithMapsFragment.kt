@@ -4,20 +4,22 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.raassh.dicodingstoryapp.R
+import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.FragmentStoriesWithMapsBinding
 
 class StoriesWithMapsFragment : Fragment() {
@@ -37,14 +39,35 @@ class StoriesWithMapsFragment : Fragment() {
 
             it.forEach { story ->
                 val latLng = LatLng(story.lat, story.lon)
-                googleMap.addMarker(
+                val marker = googleMap.addMarker(
                     MarkerOptions().position(latLng)
                         .title(getString(R.string.stories_content_description, story.name))
+                        .snippet(getString(R.string.marker_snippet))
+                        .icon(
+                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
+                        )
                 )
+                marker?.tag = story
             }
 
-            val indonesia = LatLng(6.1750, 106.8283)
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(indonesia, 5f))
+            googleMap.uiSettings.apply {
+                isZoomControlsEnabled = true
+                isCompassEnabled = true
+            }
+
+            googleMap.apply {
+                setOnInfoWindowClickListener { marker ->
+                    findNavController().navigate(
+                        StoriesWithMapsFragmentDirections
+                            .actionStoriesWithMapsFragmentToStoryDetailFragment(
+                                marker.tag as ListStoryItem
+                            )
+                    )
+                }
+
+                val surabaya = LatLng(-7.250445, 112.768845)
+                moveCamera(CameraUpdateFactory.newLatLngZoom(surabaya, 7f))
+            }
         }
     }
 

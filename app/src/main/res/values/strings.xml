@@ -54,4 +54,5 @@
     <string name="capture_desc">Capture an image</string>
     <string name="switch_desc">Switch the camera</string>
     <string name="map">Stories In Map</string>
+    <string name="marker_snippet">Click to open the story</string>
 </resources>
