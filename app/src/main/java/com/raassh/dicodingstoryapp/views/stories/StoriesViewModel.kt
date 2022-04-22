@@ -14,7 +14,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class StoriesViewModel(private val auth: String) : ViewModel() {
+class StoriesViewModel(private val auth: String, private val location: Int) : ViewModel() {
     private val _stories = MutableLiveData<List<ListStoryItem>>()
     val stories: LiveData<List<ListStoryItem>> = _stories
 
@@ -31,7 +31,7 @@ class StoriesViewModel(private val auth: String) : ViewModel() {
     fun getAllStories() {
         _isLoading.value = true
 
-        ApiConfig.getApiService().getAllStories(auth)
+        ApiConfig.getApiService().getAllStories(auth, location)
             .enqueue(object : Callback<StoriesResponse> {
                 override fun onResponse(
                     call: Call<StoriesResponse>,
@@ -65,9 +65,10 @@ class StoriesViewModel(private val auth: String) : ViewModel() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val auth: String) : ViewModelProvider.Factory {
+    class Factory(private val auth: String, private val location: Int = 0) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return StoriesViewModel(auth) as T
+            return StoriesViewModel(auth, location) as T
         }
     }
 }

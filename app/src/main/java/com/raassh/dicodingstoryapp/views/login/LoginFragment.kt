@@ -94,7 +94,9 @@ class LoginFragment : Fragment() {
 
             token.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { token ->
-                    loggedIn(token)
+                    if (token.isNotEmpty()) {
+                        loggedIn(token)
+                    }
                 }
             }
 

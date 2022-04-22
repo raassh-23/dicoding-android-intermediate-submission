@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_storiesFragment_to_newStoryFragment"
             app:destination="@id/newStoryFragment" />
+        <action
+            android:id="@+id/action_storiesFragment_to_storiesWithMapsFragment"
+            app:destination="@id/storiesWithMapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/storyDetailFragment"
@@ -71,5 +74,10 @@
         android:id="@+id/storiesWithMapsFragment"
         android:name="com.raassh.dicodingstoryapp.views.stories.StoriesWithMapsFragment"
         android:label="fragment_stories_with_maps"
-        tools:layout="@layout/fragment_stories_with_maps" />
+        tools:layout="@layout/fragment_stories_with_maps" >
+        <argument
+            android:name="token"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
 </navigation>

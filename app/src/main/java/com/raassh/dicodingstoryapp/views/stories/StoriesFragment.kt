@@ -3,6 +3,7 @@ package com.raassh.dicodingstoryapp.views.stories
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +35,11 @@ class StoriesFragment : Fragment() {
     }
 
     private var binding: StoriesFragmentBinding? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onResume() {
         super.onResume()
@@ -170,5 +176,9 @@ class StoriesFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.list).isVisible = false
     }
 }

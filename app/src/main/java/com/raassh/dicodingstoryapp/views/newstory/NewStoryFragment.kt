@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
@@ -56,6 +57,11 @@ class NewStoryFragment : Fragment() {
             val root = binding?.root ?: return@registerForActivityResult
             showSnackbar(root, getString(R.string.load_picture_success))
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onResume() {
@@ -206,6 +212,11 @@ class NewStoryFragment : Fragment() {
             uploadGroup.visibility = visibility(!isLoading)
             uploadLoadingGroup.visibility = visibility(isLoading)
         }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.map).isVisible = false
+        menu.findItem(R.id.list).isVisible = false
     }
 
     companion object {

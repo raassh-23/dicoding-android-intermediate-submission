@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,7 @@ class StoryDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
         sharedElementEnterTransition = TransitionInflater.from(context)
             .inflateTransition(android.R.transition.move)
+        setHasOptionsMenu(true);
     }
 
     override fun onResume() {
@@ -88,5 +90,10 @@ class StoryDetailFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.map).isVisible = false
+        menu.findItem(R.id.list).isVisible = false
     }
 }

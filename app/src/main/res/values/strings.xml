@@ -53,4 +53,6 @@
     <string name="widget_empty_data">Data is empty or failed to get data</string>
     <string name="capture_desc">Capture an image</string>
     <string name="switch_desc">Switch the camera</string>
+    <string name="map">Stories In Map</string>
+    <string name="list">List Stories</string>
 </resources>
