@@ -37,9 +37,8 @@ class NewStoryFragment : Fragment() {
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         if (!allPermissionGranted()) {
-            val root = binding?.root
-            if (root != null) {
-                showSnackbar(root, getString(R.string.permission_denied))
+            binding?.root?.let {
+                showSnackbar(it, getString(R.string.permission_denied))
             }
 
             findNavController().navigateUp()
@@ -54,14 +53,10 @@ class NewStoryFragment : Fragment() {
             imgFile = uriToFile(selectedImage, context as Context)
             binding?.previewImage?.setImageURI(selectedImage)
 
-            val root = binding?.root ?: return@registerForActivityResult
-            showSnackbar(root, getString(R.string.load_picture_success))
+            binding?.root?.let { root ->
+                showSnackbar(root, getString(R.string.load_picture_success))
+            }
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
     }
 
     override fun onResume() {
@@ -130,12 +125,12 @@ class NewStoryFragment : Fragment() {
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    val root = binding?.root ?: return@observe
-
-                    if (message.isEmpty()) {
-                        showSnackbar(root, getString(R.string.generic_error))
-                    } else {
-                        showSnackbar(root, message)
+                    binding?.root?.let {
+                        if (message.isEmpty()) {
+                            showSnackbar(it, getString(R.string.generic_error))
+                        } else {
+                            showSnackbar(it, message)
+                        }
                     }
                 }
             }
@@ -154,8 +149,9 @@ class NewStoryFragment : Fragment() {
 
         binding?.previewImage?.setImageBitmap(result)
 
-        val root = binding?.root ?: return
-        showSnackbar(root, getString(R.string.take_picture_success))
+        binding?.root?.let {
+            showSnackbar(it, getString(R.string.take_picture_success))
+        }
     }
 
     private fun pickImageFromGallery() {
@@ -212,11 +208,6 @@ class NewStoryFragment : Fragment() {
             uploadGroup.visibility = visibility(!isLoading)
             uploadLoadingGroup.visibility = visibility(isLoading)
         }
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.map).isVisible = false
-        menu.findItem(R.id.list).isVisible = false
     }
 
     companion object {

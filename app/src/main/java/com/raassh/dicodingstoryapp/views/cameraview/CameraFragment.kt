@@ -70,7 +70,8 @@ class CameraFragment : Fragment() {
         val name = "$timeStamp.jpg"
 
         val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(context?.contentResolver as ContentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            .Builder(context?.contentResolver as ContentResolver,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 ContentValues().apply {
                     put(MediaStore.Images.Media.TITLE, name)
                     put(MediaStore.Images.Media.DISPLAY_NAME, name)
@@ -97,8 +98,9 @@ class CameraFragment : Fragment() {
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                    val root = binding?.root ?: return
-                    showSnackbar(root, getString(R.string.take_picture_fail))
+                    binding?.root?.let {
+                        showSnackbar(it, getString(R.string.take_picture_fail))
+                    }
                 }
             }
         )
@@ -125,8 +127,9 @@ class CameraFragment : Fragment() {
                     imageCapture
                 )
             } catch (e: Exception) {
-                val root = binding?.root ?: return@addListener
-                showSnackbar(root, getString(R.string.camera_fail))
+                binding?.root?.let {
+                    showSnackbar(it, getString(R.string.camera_fail))
+                }
             }
         }, ContextCompat.getMainExecutor(context as Context))
     }

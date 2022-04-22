@@ -5,12 +5,7 @@
         android:id="@+id/map"
         android:icon="@drawable/ic_baseline_map_24"
         android:title="@string/map"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/list"
-        android:icon="@drawable/ic_baseline_list_24"
-        android:title="@string/list"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 
     <item

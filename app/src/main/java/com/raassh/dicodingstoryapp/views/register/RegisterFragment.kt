@@ -96,12 +96,12 @@ class RegisterFragment : Fragment() {
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    val root = binding?.root ?: return@observe
-
-                    if (message.isEmpty()) {
-                        showSnackbar(root, getString(R.string.generic_error))
-                    } else {
-                        showSnackbar(root, message)
+                    binding?.root?.let {
+                        if (message.isEmpty()) {
+                            showSnackbar(it, getString(R.string.generic_error))
+                        } else {
+                            showSnackbar(it, message)
+                        }
                     }
                 }
             }
@@ -133,10 +133,8 @@ class RegisterFragment : Fragment() {
     }
 
     private fun registered() {
-        val root = binding?.root
-
-        if (root != null) {
-            showSnackbar(root, getString(R.string.register_success))
+        binding?.root?.let {
+            showSnackbar(it, getString(R.string.register_success))
         }
 
         setFragmentResult(

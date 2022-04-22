@@ -109,19 +109,19 @@ class StoriesFragment : Fragment() {
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    val root = binding?.root ?: return@observe
-
-                    if (message.isEmpty()) {
-                        showSnackbar(
-                            root,
-                            getString(R.string.generic_error),
-                            getString(R.string.retry)
-                        ) {
-                            viewModel.getAllStories()
-                        }
-                    } else {
-                        showSnackbar(root, message, getString(R.string.retry)) {
-                            viewModel.getAllStories()
+                    binding?.root?.let {
+                        if (message.isEmpty()) {
+                            showSnackbar(
+                                it,
+                                getString(R.string.generic_error),
+                                getString(R.string.retry)
+                            ) {
+                                viewModel.getAllStories()
+                            }
+                        } else {
+                            showSnackbar(it, message, getString(R.string.retry)) {
+                                viewModel.getAllStories()
+                            }
                         }
                     }
                 }
@@ -132,8 +132,9 @@ class StoriesFragment : Fragment() {
     private fun storyAdded() {
         viewModel.getAllStories()
 
-        val root = binding?.root ?: return
-        showSnackbar(root, getString(R.string.upload_success))
+        binding?.root?.let {
+            showSnackbar(it, getString(R.string.upload_success))
+        }
     }
 
     private fun goToNewStory() {
@@ -179,6 +180,6 @@ class StoriesFragment : Fragment() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.list).isVisible = false
+        menu.findItem(R.id.map).isVisible = true
     }
 }

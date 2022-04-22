@@ -1,5 +1,6 @@
 package com.raassh.dicodingstoryapp.views.stories
 
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,9 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.databinding.FragmentStoriesWithMapsBinding
@@ -27,9 +30,7 @@ class StoriesWithMapsFragment : Fragment() {
     private var binding: FragmentStoriesWithMapsBinding? = null
 
     private val callback = OnMapReadyCallback { googleMap ->
-//        val sydney = LatLng(-34.0, 151.0)
-//        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        setMapStyle(googleMap)
 
         viewModel.stories.observe(viewLifecycleOwner) {
             googleMap.clear()
@@ -43,21 +44,13 @@ class StoriesWithMapsFragment : Fragment() {
             }
 
             val indonesia = LatLng(6.1750, 106.8283)
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(indonesia))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(indonesia, 5f))
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
     }
 
     override fun onResume() {
         super.onResume()
-        (activity as AppCompatActivity).supportActionBar?.apply {
-            show()
-            setDisplayHomeAsUpEnabled(false)
-        }
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onCreateView(
@@ -84,7 +77,26 @@ class StoriesWithMapsFragment : Fragment() {
         binding = null
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.map).isVisible = false
+    private fun setMapStyle(map: GoogleMap) {
+        try {
+            context?.let {
+                val success = map.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                        it,
+                        R.raw.map_style
+                    )
+                )
+
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.")
+                }
+            }
+        } catch (exception: Resources.NotFoundException) {
+            Log.e(TAG, "Can't find style. Error: ", exception)
+        }
+    }
+
+    companion object {
+        private const val TAG = "StoriesWithMapsFragment"
     }
 }

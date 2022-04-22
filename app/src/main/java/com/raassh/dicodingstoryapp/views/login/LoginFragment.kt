@@ -102,12 +102,12 @@ class LoginFragment : Fragment() {
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    val root = binding?.root ?: return@observe
-
-                    if (message.isEmpty()) {
-                        showSnackbar(root, getString(R.string.generic_error))
-                    } else {
-                        showSnackbar(root, message)
+                    binding?.root?.let {
+                        if (message.isEmpty()) {
+                            showSnackbar(it, getString(R.string.generic_error))
+                        } else {
+                            showSnackbar(it, message)
+                        }
                     }
                 }
             }
@@ -139,8 +139,9 @@ class LoginFragment : Fragment() {
     private fun loggedIn(token: String) {
         sharedViewModel.saveToken(token)
 
-        val root = binding?.root ?: return
-        showSnackbar(root, getString(R.string.login_success))
+        binding?.root?.let {
+            showSnackbar(it, getString(R.string.login_success))
+        }
     }
 
     private fun goToStories(token: String) {
