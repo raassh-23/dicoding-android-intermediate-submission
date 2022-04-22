@@ -1,15 +1,17 @@
 package com.raassh.dicodingstoryapp.views.newstory
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +20,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.databinding.NewStoryFragmentBinding
@@ -32,6 +38,10 @@ class NewStoryFragment : Fragment() {
 
     private var imgFile: File? = null
     private var token = ""
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var location: Location? = null
+    private val cts = CancellationTokenSource()
 
     private val launcherPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -108,6 +118,12 @@ class NewStoryFragment : Fragment() {
             addButton.setOnClickListener {
                 addStory()
             }
+
+            locationText.visibility = View.GONE
+
+            locationButton.setOnClickListener {
+                getLocation()
+            }
         }
 
         viewModel.apply {
@@ -125,15 +141,19 @@ class NewStoryFragment : Fragment() {
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    binding?.root?.let {
+                    binding?.root?.let { root ->
                         if (message.isEmpty()) {
-                            showSnackbar(it, getString(R.string.generic_error))
+                            showSnackbar(root, getString(R.string.generic_error))
                         } else {
-                            showSnackbar(it, message)
+                            showSnackbar(root, message)
                         }
                     }
                 }
             }
+        }
+
+        activity?.let {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(it)
         }
     }
 
@@ -176,7 +196,8 @@ class NewStoryFragment : Fragment() {
             viewModel.addNewStory(
                 imgFile as File,
                 descriptionInput.text.toString(),
-                getString(R.string.auth, token)
+                getString(R.string.auth, token),
+                location
             )
         }
     }
@@ -194,6 +215,7 @@ class NewStoryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+        cts.cancel()
     }
 
     private fun allPermissionGranted() = REQUIRED_PERMISSIONS.all {
@@ -210,12 +232,45 @@ class NewStoryFragment : Fragment() {
         }
     }
 
+    @SuppressLint("MissingPermission")
+    private fun getLocation() {
+        showLoading(true)
+        binding?.loadingText?.text = getString(R.string.location_loading)
+
+        fusedLocationClient.getCurrentLocation(
+            LocationRequest.PRIORITY_HIGH_ACCURACY,
+            cts.token
+        )
+            .addOnSuccessListener {
+                showLoading(false)
+                binding?.loadingText?.text = getString(R.string.uploading)
+
+                location = it
+                binding?.locationText?.apply {
+                    text = getString(R.string.location, location?.latitude, location?.longitude)
+                    visibility = View.VISIBLE
+                }
+            }
+            .addOnFailureListener {
+                showLoading(false)
+                binding?.loadingText?.text = getString(R.string.uploading)
+
+                binding?.root?.let { root ->
+                    showSnackbar(root, it.localizedMessage ?: getString(R.string.generic_error))
+                }
+            }
+    }
+
     companion object {
-        private val REQUIRED_PERMISSIONS = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        } else {
-            arrayOf(Manifest.permission.CAMERA)
-        }
+        private val REQUIRED_PERMISSIONS = mutableListOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ).apply {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        }.toTypedArray()
 
         const val ADD_RESULT = "add_result"
         const val IS_SUCCESS = "is_success"

@@ -109,17 +109,17 @@ class StoriesFragment : Fragment() {
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    binding?.root?.let {
+                    binding?.root?.let { root ->
                         if (message.isEmpty()) {
                             showSnackbar(
-                                it,
+                                root,
                                 getString(R.string.generic_error),
                                 getString(R.string.retry)
                             ) {
                                 viewModel.getAllStories()
                             }
                         } else {
-                            showSnackbar(it, message, getString(R.string.retry)) {
+                            showSnackbar(root, message, getString(R.string.retry)) {
                                 viewModel.getAllStories()
                             }
                         }

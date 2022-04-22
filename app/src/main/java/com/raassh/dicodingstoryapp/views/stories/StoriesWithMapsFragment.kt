@@ -21,6 +21,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.FragmentStoriesWithMapsBinding
+import com.raassh.dicodingstoryapp.misc.showSnackbar
+import com.raassh.dicodingstoryapp.misc.visibility
 
 class StoriesWithMapsFragment : Fragment() {
     private var token = ""
@@ -65,8 +67,9 @@ class StoriesWithMapsFragment : Fragment() {
                     )
                 }
 
-                val surabaya = LatLng(-7.250445, 112.768845)
-                moveCamera(CameraUpdateFactory.newLatLngZoom(surabaya, 7f))
+                val randomStory = it[(0..it.size).random()]
+                val randomLocation = LatLng(randomStory.lat, randomStory.lon)
+                animateCamera(CameraUpdateFactory.newLatLngZoom(randomLocation, 7f))
             }
         }
     }
@@ -89,6 +92,32 @@ class StoriesWithMapsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         token = StoriesWithMapsFragmentArgs.fromBundle(arguments as Bundle).token
+
+        viewModel.apply {
+            isLoading.observe(viewLifecycleOwner) {
+                showLoading(it)
+            }
+
+            error.observe(viewLifecycleOwner) {
+                it.getContentIfNotHandled()?.let { message ->
+                    binding?.root?.let { root ->
+                        if (message.isEmpty()) {
+                            showSnackbar(
+                                root,
+                                getString(R.string.generic_error),
+                                getString(R.string.retry)
+                            ) {
+                                viewModel.getAllStories()
+                            }
+                        } else {
+                            showSnackbar(root, message, getString(R.string.retry)) {
+                                viewModel.getAllStories()
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment?
@@ -116,6 +145,12 @@ class StoriesWithMapsFragment : Fragment() {
             }
         } catch (exception: Resources.NotFoundException) {
             Log.e(TAG, "Can't find style. Error: ", exception)
+        }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding?.apply {
+            storiesLoadingGroup.visibility = visibility(isLoading)
         }
     }
 

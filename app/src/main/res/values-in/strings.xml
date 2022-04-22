@@ -53,4 +53,7 @@
     <string name="switch_desc">Ganti kamera</string>
     <string name="map">Story Di Peta</string>
     <string name="marker_snippet">Klik untuk membuka story</string>
+    <string name="get_location">Ambil Lokasi</string>
+    <string name="location">Lintang: %1$f, Bujur: %2$f</string>
+    <string name="location_loading">Mengambil lokasi....</string>
 </resources>

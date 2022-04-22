@@ -1,5 +1,6 @@
 package com.raassh.dicodingstoryapp.views.newstory
 
+import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,7 +29,7 @@ class NewStoryViewModel : ViewModel() {
     private val _error = MutableLiveData<Event<String>>()
     val error: LiveData<Event<String>> = _error
 
-    fun addNewStory(image: File, description: String, auth: String) {
+    fun addNewStory(image: File, description: String, auth: String, location: Location? = null) {
         val reducedImage = reduceFileImage(image)
 
         val descPart = description.toRequestBody("text/plain".toMediaType())
@@ -38,8 +39,22 @@ class NewStoryViewModel : ViewModel() {
             reducedImage.asRequestBody("image/jpeg".toMediaType())
         )
 
+        val params = mutableMapOf(
+            "description" to descPart
+        )
+
+        if (location != null) {
+            val latPart = location.latitude.toString().toRequestBody("text/plain".toMediaType())
+            val lonPart = location.longitude.toString().toRequestBody("text/plain".toMediaType())
+
+            params.apply {
+                put("lat", latPart)
+                put("lon", lonPart)
+            }
+        }
+
         _isLoading.value = true
-        ApiConfig.getApiService().addStory(imageMultiPart, descPart, auth)
+        ApiConfig.getApiService().addStory(imageMultiPart, HashMap(params), auth)
             .enqueue(object : Callback<GenericResponse> {
                 override fun onResponse(
                     call: Call<GenericResponse>,

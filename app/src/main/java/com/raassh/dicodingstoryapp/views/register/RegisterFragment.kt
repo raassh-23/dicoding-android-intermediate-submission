@@ -94,13 +94,13 @@ class RegisterFragment : Fragment() {
                 }
             }
 
-            error.observe(viewLifecycleOwner) {
+            error.observe(viewLifecycleOwner) { it ->
                 it.getContentIfNotHandled()?.let { message ->
-                    binding?.root?.let {
+                    binding?.root?.let { root ->
                         if (message.isEmpty()) {
-                            showSnackbar(it, getString(R.string.generic_error))
+                            showSnackbar(root, getString(R.string.generic_error))
                         } else {
-                            showSnackbar(it, message)
+                            showSnackbar(root, message)
                         }
                     }
                 }

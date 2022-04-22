@@ -102,11 +102,11 @@ class LoginFragment : Fragment() {
 
             error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
-                    binding?.root?.let {
+                    binding?.root?.let { root ->
                         if (message.isEmpty()) {
-                            showSnackbar(it, getString(R.string.generic_error))
+                            showSnackbar(root, getString(R.string.generic_error))
                         } else {
-                            showSnackbar(it, message)
+                            showSnackbar(root, message)
                         }
                     }
                 }

@@ -31,7 +31,7 @@ interface ApiService {
     @POST("stories")
     fun addStory(
         @Part file: MultipartBody.Part,
-        @Part("description") description: RequestBody,
+        @PartMap params: HashMap<String, RequestBody>,
         @Header("Authorization") auth: String
     ): Call<GenericResponse>
 

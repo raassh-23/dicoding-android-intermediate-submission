@@ -55,4 +55,7 @@
     <string name="switch_desc">Switch the camera</string>
     <string name="map">Stories In Map</string>
     <string name="marker_snippet">Click to open the story</string>
+    <string name="get_location">Get Location</string>
+    <string name="location">Latitude: %1$f, Longitude: %2$f</string>
+    <string name="location_loading">Getting location....</string>
 </resources>
