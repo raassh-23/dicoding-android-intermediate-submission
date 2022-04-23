@@ -1,5 +1,6 @@
 package com.raassh.dicodingstoryapp.views.stories
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,8 +20,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.raassh.dicodingstoryapp.R
-import com.raassh.dicodingstoryapp.data.adapter.ListStoriesAdapter
+import com.raassh.dicodingstoryapp.data.api.ApiConfig
+import com.raassh.dicodingstoryapp.data.api.ApiService
+import com.raassh.dicodingstoryapp.data.paging.ListStoriesAdapter
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
+import com.raassh.dicodingstoryapp.data.database.StoryDatabase
+import com.raassh.dicodingstoryapp.data.paging.StoryRepository
 import com.raassh.dicodingstoryapp.databinding.StoriesFragmentBinding
 import com.raassh.dicodingstoryapp.databinding.StoryItemBinding
 import com.raassh.dicodingstoryapp.misc.showSnackbar
@@ -31,7 +36,11 @@ class StoriesFragment : Fragment() {
     private var token = ""
 
     private val viewModel by viewModels<StoriesViewModel> {
-        StoriesViewModel.Factory(getString(R.string.auth, token))
+        StoriesViewModel.Factory(StoryRepository(
+            StoryDatabase.getDatabase(context as Context),
+            ApiConfig.getApiService(),
+            getString(R.string.auth, token)
+        ))
     }
 
     private var binding: StoriesFragmentBinding? = null
@@ -61,7 +70,6 @@ class StoriesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         token = StoriesFragmentArgs.fromBundle(arguments as Bundle).token
-        postponeEnterTransition()
 
         setFragmentResultListener(NewStoryFragment.ADD_RESULT) { _, bundle ->
             if (bundle.getBoolean(NewStoryFragment.IS_SUCCESS)) {
@@ -87,6 +95,32 @@ class StoriesFragment : Fragment() {
                         layoutManager.orientation
                     )
                 )
+
+                adapter = ListStoriesAdapter().apply {
+                    setOnItemClickCallback(object : ListStoriesAdapter.OnItemClickCallback {
+                        override fun onItemClicked(
+                            story: ListStoryItem,
+                            storyBinding: StoryItemBinding
+                        ) {
+                            val extras = FragmentNavigatorExtras(
+                                storyBinding.storyImage to getString(
+                                    R.string.story_image,
+                                    story.id
+                                ),
+                                storyBinding.storyUser to getString(R.string.story_user, story.id)
+                            )
+
+                            view.findNavController().navigate(
+                                R.id.action_storiesFragment_to_storyDetailFragment,
+                                bundleOf(
+                                    "story" to story
+                                ),
+                                null,
+                                extras
+                            )
+                        }
+                    })
+                }
             }
 
             addNew.setOnClickListener {
@@ -94,35 +128,17 @@ class StoriesFragment : Fragment() {
             }
         }
 
+        showLoading(false)
+
         viewModel.apply {
-            isLoading.observe(viewLifecycleOwner) {
-                showLoading(it)
-            }
-
             stories.observe(viewLifecycleOwner) {
-                setStoriesAdapter(ArrayList(it))
-                binding?.noDataText?.visibility = visibility(it.isEmpty())
-                (view.parent as? ViewGroup)?.doOnPreDraw {
-                    startPostponedEnterTransition()
-                }
-            }
+                postponeEnterTransition()
 
-            error.observe(viewLifecycleOwner) {
-                it.getContentIfNotHandled()?.let { message ->
-                    binding?.root?.let { root ->
-                        if (message.isEmpty()) {
-                            showSnackbar(
-                                root,
-                                getString(R.string.generic_error),
-                                getString(R.string.retry)
-                            ) {
-                                viewModel.getAllStories()
-                            }
-                        } else {
-                            showSnackbar(root, message, getString(R.string.retry)) {
-                                viewModel.getAllStories()
-                            }
-                        }
+                binding?.apply {
+                    (listStory.adapter as ListStoriesAdapter).submitData(lifecycle, it)
+
+                    (view.parent as? ViewGroup)?.doOnPreDraw {
+                        startPostponedEnterTransition()
                     }
                 }
             }
@@ -130,7 +146,7 @@ class StoriesFragment : Fragment() {
     }
 
     private fun storyAdded() {
-        viewModel.getAllStories()
+//        viewModel.getAllStories()
 
         binding?.root?.let {
             showSnackbar(it, getString(R.string.upload_success))
@@ -145,31 +161,9 @@ class StoriesFragment : Fragment() {
         findNavController().navigate(navigateAction)
     }
 
-    private fun setStoriesAdapter(stories: ArrayList<ListStoryItem>) {
-        binding?.listStory?.adapter = ListStoriesAdapter(stories).apply {
-            setOnItemClickCallback(object : ListStoriesAdapter.OnItemClickCallback {
-                override fun onItemClicked(story: ListStoryItem, storyBinding: StoryItemBinding) {
-                    val extras = FragmentNavigatorExtras(
-                        storyBinding.storyImage to getString(R.string.story_image, story.id),
-                        storyBinding.storyUser to getString(R.string.story_user, story.id)
-                    )
-
-                    view?.findNavController()?.navigate(
-                        R.id.action_storiesFragment_to_storyDetailFragment,
-                        bundleOf(
-                            "story" to story
-                        ),
-                        null,
-                        extras
-                    )
-                }
-            })
-        }
-    }
-
     private fun showLoading(isLoading: Boolean) {
         binding?.apply {
-            listStory.visibility = visibility(!isLoading)
+            storiesGroup.visibility = visibility(!isLoading)
             storiesLoadingGroup.visibility = visibility(isLoading)
         }
     }

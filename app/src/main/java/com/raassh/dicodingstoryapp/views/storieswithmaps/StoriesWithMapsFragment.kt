@@ -1,4 +1,4 @@
-package com.raassh.dicodingstoryapp.views.stories
+package com.raassh.dicodingstoryapp.views.storieswithmaps
 
 import android.content.res.Resources
 import android.os.Bundle
@@ -27,14 +27,32 @@ import com.raassh.dicodingstoryapp.misc.visibility
 class StoriesWithMapsFragment : Fragment() {
     private var token = ""
 
-    private val viewModel by viewModels<StoriesViewModel> {
-        StoriesViewModel.Factory(getString(R.string.auth, token), 1)
+    private val viewModel by viewModels<StoriesWithMapViewModel> {
+        StoriesWithMapViewModel.Factory(getString(R.string.auth, token))
     }
 
     private var binding: FragmentStoriesWithMapsBinding? = null
 
+    private var focusedStory: ListStoryItem? = null
+
     private val callback = OnMapReadyCallback { googleMap ->
         setMapStyle(googleMap)
+
+        googleMap.uiSettings.apply {
+            isZoomControlsEnabled = true
+            isCompassEnabled = true
+        }
+
+        googleMap.setOnInfoWindowClickListener {
+            val story = it.tag as ListStoryItem
+
+            focusedStory = story
+            findNavController().navigate(
+                StoriesWithMapsFragmentDirections.actionStoriesWithMapsFragmentToStoryDetailFragment(
+                    story
+                )
+            )
+        }
 
         viewModel.stories.observe(viewLifecycleOwner) {
             googleMap.clear()
@@ -52,25 +70,10 @@ class StoriesWithMapsFragment : Fragment() {
                 marker?.tag = story
             }
 
-            googleMap.uiSettings.apply {
-                isZoomControlsEnabled = true
-                isCompassEnabled = true
-            }
-
-            googleMap.apply {
-                setOnInfoWindowClickListener { marker ->
-                    findNavController().navigate(
-                        StoriesWithMapsFragmentDirections
-                            .actionStoriesWithMapsFragmentToStoryDetailFragment(
-                                marker.tag as ListStoryItem
-                            )
-                    )
-                }
-
-                val randomStory = it[(0..it.size).random()]
-                val randomLocation = LatLng(randomStory.lat, randomStory.lon)
-                animateCamera(CameraUpdateFactory.newLatLngZoom(randomLocation, 7f))
-            }
+            val story = focusedStory ?: it[(1..it.size).random() - 1]
+            googleMap.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(LatLng(story.lat, story.lon), 7f)
+            )
         }
     }
 
@@ -91,7 +94,9 @@ class StoriesWithMapsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        token = StoriesWithMapsFragmentArgs.fromBundle(arguments as Bundle).token
+        token = StoriesWithMapsFragmentArgs.fromBundle(
+            arguments as Bundle
+        ).token
 
         viewModel.apply {
             isLoading.observe(viewLifecycleOwner) {

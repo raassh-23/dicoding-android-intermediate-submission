@@ -22,7 +22,6 @@ import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.data.SessionPreferences
 import com.raassh.dicodingstoryapp.databinding.ActivityMainBinding
 import com.raassh.dicodingstoryapp.views.stories.StoriesFragmentDirections
-import com.raassh.dicodingstoryapp.views.stories.StoriesWithMapsFragmentArgs
 
 internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "session")
 

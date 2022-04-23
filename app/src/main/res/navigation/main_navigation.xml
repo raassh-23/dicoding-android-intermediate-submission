@@ -72,7 +72,7 @@
         tools:layout="@layout/fragment_camera" />
     <fragment
         android:id="@+id/storiesWithMapsFragment"
-        android:name="com.raassh.dicodingstoryapp.views.stories.StoriesWithMapsFragment"
+        android:name="com.raassh.dicodingstoryapp.views.storieswithmaps.StoriesWithMapsFragment"
         android:label="fragment_stories_with_maps"
         tools:layout="@layout/fragment_stories_with_maps" >
         <argument
