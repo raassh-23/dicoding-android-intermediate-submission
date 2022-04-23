@@ -51,7 +51,7 @@ data class StoriesResponse(
     val message: String
 )
 
-@Entity("story")
+@Entity("stories")
 @Parcelize
 data class ListStoryItem(
 

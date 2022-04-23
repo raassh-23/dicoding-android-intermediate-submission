@@ -6,9 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 
-@Database(entities = [ListStoryItem::class], version = 1)
+@Database(entities = [ListStoryItem::class, RemoteKeyEntity::class], version = 1)
 abstract class StoryDatabase : RoomDatabase() {
     abstract fun getStoryDao(): StoryDao
+    abstract fun getRemoteKeyDao(): RemoteKeyDao
 
     companion object {
         @Volatile

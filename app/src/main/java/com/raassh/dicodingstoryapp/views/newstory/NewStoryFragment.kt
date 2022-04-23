@@ -10,14 +10,12 @@ import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -134,7 +132,7 @@ class NewStoryFragment : Fragment() {
             isSuccess.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { success ->
                     if (success) {
-                        goBack()
+                        storyAdded()
                     }
                 }
             }
@@ -167,10 +165,9 @@ class NewStoryFragment : Fragment() {
             isBackCamera
         )
 
-        binding?.previewImage?.setImageBitmap(result)
-
-        binding?.root?.let {
-            showSnackbar(it, getString(R.string.take_picture_success))
+        binding?.apply {
+            previewImage.setImageBitmap(result)
+            showSnackbar(root, getString(R.string.take_picture_success))
         }
     }
 
@@ -202,14 +199,16 @@ class NewStoryFragment : Fragment() {
         }
     }
 
-    private fun goBack() {
-        setFragmentResult(
-            ADD_RESULT, bundleOf(
-                IS_SUCCESS to true
-            )
-        )
+    private fun storyAdded() {
+        val action = NewStoryFragmentDirections.actionNewStoryFragmentToStoriesFragment().apply {
+            token = this@NewStoryFragment.token
+            newStoryAdded = true
+        }
 
-        findNavController().navigateUp()
+        findNavController().navigate(action)
+        binding?.root?.let {
+            showSnackbar(it, getString(R.string.upload_success))
+        }
     }
 
     override fun onDestroyView() {
@@ -271,8 +270,5 @@ class NewStoryFragment : Fragment() {
                 add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
         }.toTypedArray()
-
-        const val ADD_RESULT = "add_result"
-        const val IS_SUCCESS = "is_success"
     }
 }

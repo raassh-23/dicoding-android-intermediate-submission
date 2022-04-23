@@ -145,3 +145,5 @@ fun reduceFileImage(file: File, step: Int = 5): File {
     bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, FileOutputStream(file))
     return file
 }
+
+fun Boolean?.isTrue() = this != null && this
