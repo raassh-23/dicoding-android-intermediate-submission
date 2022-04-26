@@ -1,9 +1,6 @@
 package com.raassh.dicodingstoryapp.views.login
 
-import android.util.Log
 import androidx.lifecycle.*
-import com.google.gson.Gson
-import com.raassh.dicodingstoryapp.data.api.GenericResponse
 import com.raassh.dicodingstoryapp.data.repository.AuthRepository
 import com.raassh.dicodingstoryapp.misc.Event
 import com.raassh.dicodingstoryapp.misc.getErrorResponse

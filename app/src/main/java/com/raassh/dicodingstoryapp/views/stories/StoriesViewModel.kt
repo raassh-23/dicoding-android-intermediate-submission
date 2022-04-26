@@ -7,7 +7,7 @@ import androidx.paging.cachedIn
 import com.raassh.dicodingstoryapp.data.repository.StoryRepository
 
 class StoriesViewModel(storyRepository: StoryRepository) : ViewModel() {
-    val stories = storyRepository.getStoriesPaged().cachedIn(viewModelScope)
+    val stories = storyRepository.getStoriesPaged()
 
     @Suppress("UNCHECKED_CAST")
     class Factory(private val storyRepository: StoryRepository) :

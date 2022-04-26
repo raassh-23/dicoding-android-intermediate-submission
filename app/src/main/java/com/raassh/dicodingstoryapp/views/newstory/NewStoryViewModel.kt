@@ -25,8 +25,12 @@ class NewStoryViewModel(private val storyRepository: StoryRepository) : ViewMode
     private val _error = MutableLiveData<Event<String>>()
     val error: LiveData<Event<String>> = _error
 
-    fun addNewStory(image: File, description: String, auth: String, location: Location? = null) {
-        val reducedImage = reduceFileImage(image)
+    fun addNewStory(image: File, description: String, auth: String, location: Location? = null, compress: Boolean = true) {
+        val reducedImage = if (compress) {
+            reduceFileImage(image)
+        } else {
+            image
+        }
 
         val descPart = description.toRequestBody("text/plain".toMediaType())
         val imageMultiPart = MultipartBody.Part.createFormData(

@@ -1,7 +1,6 @@
 package com.raassh.dicodingstoryapp.data.paging
 
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingData
@@ -16,12 +15,10 @@ import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.StoryItemBinding
 import com.raassh.dicodingstoryapp.misc.loadImage
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class ListStoriesAdapter :
-    PagingDataAdapter<ListStoryItem, ListStoriesAdapter.ViewHolder>(StoryComparator()) {
+    PagingDataAdapter<ListStoryItem, ListStoriesAdapter.ViewHolder>(STORY_COMPARATOR) {
     private var onItemClickCallback: OnItemClickCallback? = null
 
     interface OnItemClickCallback {
@@ -91,12 +88,14 @@ class ListStoriesAdapter :
         callback.invoke()
     }
 
-    class StoryComparator : DiffUtil.ItemCallback<ListStoryItem>() {
-        override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem) =
-            oldItem == newItem
+    companion object {
+        val STORY_COMPARATOR = object : DiffUtil.ItemCallback<ListStoryItem>() {
+            override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem) =
+                oldItem == newItem
 
-        override fun areContentsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem) =
-            oldItem.name == newItem.name && oldItem.description == newItem.description
-                    && oldItem.photoUrl == newItem.photoUrl
+            override fun areContentsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem) =
+                oldItem.name == newItem.name && oldItem.description == newItem.description
+                        && oldItem.photoUrl == newItem.photoUrl
+        }
     }
 }

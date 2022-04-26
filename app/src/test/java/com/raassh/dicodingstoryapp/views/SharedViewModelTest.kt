@@ -45,7 +45,7 @@ class SharedViewModelTest {
         val actual = sharedViewModel.getToken().getOrAwaitValue()
 
         Assert.assertNotNull(actual)
-        Assert.assertEquals(actual, token)
+        Assert.assertEquals(token, actual)
     }
 
     @Suppress("DEPRECATION")

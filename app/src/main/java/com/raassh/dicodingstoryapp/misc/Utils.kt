@@ -152,7 +152,7 @@ fun reduceFileImage(file: File, step: Int = 5): File {
 fun Boolean?.isTrue() = this != null && this
 
 // ref: https://stackoverflow.com/a/62513959/18277301
-fun getErrorResponse(body: ResponseBody) = Gson().fromJson(
+fun getErrorResponse(body: ResponseBody): GenericResponse = Gson().fromJson(
     body.charStream(),
     GenericResponse::class.java
 )

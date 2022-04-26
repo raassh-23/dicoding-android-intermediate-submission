@@ -1,6 +1,6 @@
 package com.raassh.dicodingstoryapp.misc
 
-open class Event<out T>(private val content: T) {
+open class Event<out T>(val content: T) {
 
     private var hasBeenHandled = false
 
