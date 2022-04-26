@@ -44,8 +44,6 @@ class StoryRemoteMediator(
             }
         }
 
-        Log.d("TAG", "load: $page")
-
         try {
             val response = apiService
                 .getAllStoriesPaged(auth, page, state.config.pageSize)

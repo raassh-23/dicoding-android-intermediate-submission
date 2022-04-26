@@ -25,7 +25,7 @@ class NewStoryViewModel(private val storyRepository: StoryRepository) : ViewMode
     private val _error = MutableLiveData<Event<String>>()
     val error: LiveData<Event<String>> = _error
 
-    fun addNewStory(image: File, description: String, auth: String, location: Location? = null, compress: Boolean = true) {
+    fun addNewStory(image: File, description: String, location: Location? = null, compress: Boolean = true) {
         val reducedImage = if (compress) {
             reduceFileImage(image)
         } else {
@@ -56,7 +56,7 @@ class NewStoryViewModel(private val storyRepository: StoryRepository) : ViewMode
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                _isSuccess.value = Event(storyRepository.addNewStory(imageMultiPart, HashMap(params), auth))
+                _isSuccess.value = Event(storyRepository.addNewStory(imageMultiPart, HashMap(params)))
             } catch (httpEx: HttpException) {
                 httpEx.response()?.errorBody()?.let {
                     val errorResponse = getErrorResponse(it)

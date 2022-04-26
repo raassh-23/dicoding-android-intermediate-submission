@@ -54,12 +54,11 @@ class NewStoryViewModelTest {
             `when`(
                 storyRepository.addNewStory(
                     org.mockito.kotlin.any(),
-                    org.mockito.kotlin.any(),
                     org.mockito.kotlin.any()
                 )
             ).thenReturn(expected)
 
-            newStoryViewModel.addNewStory(image, desc, auth, compress = false)
+            newStoryViewModel.addNewStory(image, desc, compress = false)
             val actual = newStoryViewModel.isSuccess.getOrAwaitValue()
 
             Assert.assertNotNull(actual)
@@ -77,12 +76,11 @@ class NewStoryViewModelTest {
         `when`(
             storyRepository.addNewStory(
                 org.mockito.kotlin.any(),
-                org.mockito.kotlin.any(),
                 org.mockito.kotlin.any()
             )
         ).thenReturn(expected)
 
-        newStoryViewModel.addNewStory(image, desc, auth, location, compress = false)
+        newStoryViewModel.addNewStory(image, desc, location, compress = false)
         val actual = newStoryViewModel.isSuccess.getOrAwaitValue()
 
         Assert.assertNotNull(actual)
@@ -96,12 +94,11 @@ class NewStoryViewModelTest {
         `when`(
             storyRepository.addNewStory(
                 org.mockito.kotlin.any(),
-                org.mockito.kotlin.any(),
                 org.mockito.kotlin.any()
             )
         ).thenThrow(createErrorResponse(500, expected))
 
-        newStoryViewModel.addNewStory(image, desc, auth, compress = false)
+        newStoryViewModel.addNewStory(image, desc, compress = false)
         val actual = newStoryViewModel.error.getOrAwaitValue()
 
         Assert.assertNotNull(actual)

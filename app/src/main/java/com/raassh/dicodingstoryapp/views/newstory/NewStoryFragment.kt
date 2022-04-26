@@ -207,7 +207,6 @@ class NewStoryFragment : Fragment() {
             viewModel.addNewStory(
                 imgFile as File,
                 descriptionInput.text.toString(),
-                getString(R.string.auth, token),
                 location
             )
         }

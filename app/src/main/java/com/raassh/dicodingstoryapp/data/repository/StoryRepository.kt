@@ -32,8 +32,7 @@ class StoryRepository(
 
     suspend fun addNewStory(
         multipart: MultipartBody.Part,
-        params: HashMap<String, RequestBody>,
-        auth: String
+        params: HashMap<String, RequestBody>
     ) =
         !apiService.addStory(multipart, params, auth).error
 }
