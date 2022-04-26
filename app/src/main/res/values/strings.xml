@@ -58,4 +58,6 @@
     <string name="get_location">Get Location</string>
     <string name="location">Latitude: %1$f, Longitude: %2$f</string>
     <string name="location_loading">Getting location....</string>
+    <string name="continue_with_offline_mode">Continue with offline mode</string>
+    <string name="story_list_is_empty">Story list is empty</string>
 </resources>

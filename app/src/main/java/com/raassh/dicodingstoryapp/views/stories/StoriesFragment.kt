@@ -3,7 +3,6 @@ package com.raassh.dicodingstoryapp.views.stories
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -11,12 +10,14 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,7 +30,8 @@ import com.raassh.dicodingstoryapp.data.paging.LoadingStateAdapter
 import com.raassh.dicodingstoryapp.data.repository.StoryRepository
 import com.raassh.dicodingstoryapp.databinding.StoriesFragmentBinding
 import com.raassh.dicodingstoryapp.databinding.StoryItemBinding
-import kotlinx.coroutines.delay
+import com.raassh.dicodingstoryapp.views.MainActivity
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -60,9 +62,11 @@ class StoriesFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        (activity as AppCompatActivity).supportActionBar?.apply {
-            show()
-            setDisplayHomeAsUpEnabled(false)
+        if (activity is MainActivity) {
+            (activity as AppCompatActivity).supportActionBar?.apply {
+                show()
+                setDisplayHomeAsUpEnabled(false)
+            }
         }
     }
 
@@ -124,7 +128,7 @@ class StoriesFragment : Fragment() {
                 )
 
                 adapter = listStoriesAdapter.withLoadStateFooter(
-                    LoadingStateAdapter {
+                    footer = LoadingStateAdapter {
                         listStoriesAdapter.retry()
                     }
                 )
@@ -132,6 +136,18 @@ class StoriesFragment : Fragment() {
 
             addNew.setOnClickListener {
                 goToNewStory()
+            }
+
+            retryButtonInitial.setOnClickListener {
+                listStoriesAdapter.retry()
+            }
+
+            offlineButtonInitial.setOnClickListener {
+                listStory.isVisible = true
+                emptyText.isVisible = true
+                retryButtonInitial.isVisible = false
+                errorTextInitial.isVisible = false
+                offlineButtonInitial.isVisible = false
             }
         }
 
@@ -143,13 +159,33 @@ class StoriesFragment : Fragment() {
                     listStoriesAdapter.submitDataWithCallback(it) {
                         if (newStoryAdded) {
                             newStoryAdded = false
-                            binding?.listStory?.scrollToPosition(0)
+                            listStory.scrollToPosition(0)
+                        }
+
+                        emptyText.text = if (listStoriesAdapter.itemCount > 0) {
+                            ""
+                        } else {
+                            getString(R.string.story_list_is_empty)
                         }
                     }
                 }
 
                 (view.parent as? ViewGroup)?.doOnPreDraw {
                     startPostponedEnterTransition()
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            listStoriesAdapter.loadStateFlow.collectLatest { loadStates ->
+                binding?.apply {
+                    listStory.isVisible = loadStates.refresh is LoadState.NotLoading
+                    emptyText.isVisible = loadStates.refresh is LoadState.NotLoading
+                    progressBarInitial.isVisible = loadStates.refresh is LoadState.Loading
+                    loadingTextInitial.isVisible = loadStates.refresh is LoadState.Loading
+                    retryButtonInitial.isVisible = loadStates.refresh is LoadState.Error
+                    errorTextInitial.isVisible = loadStates.refresh is LoadState.Error
+                    offlineButtonInitial.isVisible = loadStates.refresh is LoadState.Error
                 }
             }
         }

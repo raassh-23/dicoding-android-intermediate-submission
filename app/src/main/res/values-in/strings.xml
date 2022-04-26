@@ -56,4 +56,6 @@
     <string name="get_location">Ambil Lokasi</string>
     <string name="location">Lintang: %1$f, Bujur: %2$f</string>
     <string name="location_loading">Mengambil lokasi....</string>
+    <string name="continue_with_offline_mode">Lanjutkan dalam mode offline</string>
+    <string name="story_list_is_empty">Daftar cerita kosong</string>
 </resources>

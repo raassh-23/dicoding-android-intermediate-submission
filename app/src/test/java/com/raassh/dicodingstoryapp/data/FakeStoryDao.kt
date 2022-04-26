@@ -18,6 +18,8 @@ class FakeStoryDao : StoryDao {
     override suspend fun deleteAllStories() {
         stories.clear()
     }
+
+    override suspend fun getStoriesCount() = stories.size
 }
 
 class FakePagingSource(private val data: List<ListStoryItem>) : PagingSource<Int, ListStoryItem>() {

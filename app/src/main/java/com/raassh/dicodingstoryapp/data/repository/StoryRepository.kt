@@ -35,4 +35,6 @@ class StoryRepository(
         params: HashMap<String, RequestBody>
     ) =
         !apiService.addStory(multipart, params, auth).error
+
+    suspend fun getStoriesCount() = database.getStoryDao().getStoriesCount()
 }

@@ -17,4 +17,7 @@ interface StoryDao {
 
     @Query("DELETE FROM stories")
     suspend fun deleteAllStories()
+
+    @Query("SELECT COUNT(*) FROM stories")
+    suspend fun getStoriesCount(): Int
 }
