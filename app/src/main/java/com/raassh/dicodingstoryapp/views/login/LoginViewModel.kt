@@ -1,19 +1,16 @@
 package com.raassh.dicodingstoryapp.views.login
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.lifecycle.*
 import com.google.gson.Gson
-import com.raassh.dicodingstoryapp.data.api.ApiConfig
 import com.raassh.dicodingstoryapp.data.api.GenericResponse
-import com.raassh.dicodingstoryapp.data.api.LoginResponse
-import com.raassh.dicodingstoryapp.misc.EspressoIdlingResource
+import com.raassh.dicodingstoryapp.data.repository.AuthRepository
 import com.raassh.dicodingstoryapp.misc.Event
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.raassh.dicodingstoryapp.misc.getErrorResponse
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -25,37 +22,29 @@ class LoginViewModel : ViewModel() {
 
     fun login(email: String, password: String) {
         _isLoading.value = true
-        EspressoIdlingResource.increment()
 
-        ApiConfig.getApiService().login(email, password).enqueue(object : Callback<LoginResponse> {
-            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                _isLoading.value = false
-                EspressoIdlingResource.decrement()
+        viewModelScope.launch {
+            try {
+                _token.value = Event(authRepository.login(email, password))
+            } catch (httpEx: HttpException) {
+                httpEx.response()?.errorBody()?.let {
+                    val errorResponse = getErrorResponse(it)
 
-                if (response.isSuccessful) {
-                    val token = response.body()?.loginResult?.token ?: ""
-                    _token.value = Event(token)
-                } else {
-                    val errorBody = response.errorBody()
-
-                    if (errorBody != null) {
-                        val errorResponse = Gson().fromJson(
-                            errorBody.charStream(),
-                            GenericResponse::class.java
-                        )
-
-                        _error.value = Event(errorResponse.message)
-                    } else {
-                        _error.value = Event("")
-                    }
+                    _error.value = Event(errorResponse.message)
                 }
-            }
-
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+            } catch (genericEx: Exception) {
+                _error.value = Event(genericEx.localizedMessage ?: "")
+            } finally {
                 _isLoading.value = false
-                EspressoIdlingResource.decrement()
-                _error.value = Event(t.message.toString())
             }
-        })
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    class Factory(private val authRepository: AuthRepository) :
+        ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return LoginViewModel(authRepository) as T
+        }
     }
 }

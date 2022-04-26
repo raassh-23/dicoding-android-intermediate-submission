@@ -16,7 +16,10 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -24,13 +27,24 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
+import com.raassh.dicodingstoryapp.data.api.ApiConfig
+import com.raassh.dicodingstoryapp.data.database.StoryDatabase
+import com.raassh.dicodingstoryapp.data.repository.StoryRepository
 import com.raassh.dicodingstoryapp.databinding.NewStoryFragmentBinding
 import com.raassh.dicodingstoryapp.misc.*
 import com.raassh.dicodingstoryapp.views.cameraview.CameraFragment
 import java.io.File
 
 class NewStoryFragment : Fragment() {
-    private val viewModel by viewModels<NewStoryViewModel>()
+    private val viewModel by viewModels<NewStoryViewModel> {
+        NewStoryViewModel.Factory(
+            StoryRepository(
+                StoryDatabase.getDatabase(context as Context),
+                ApiConfig.getApiService(),
+                getString(R.string.auth, token)
+            )
+        )
+    }
 
     private var binding: NewStoryFragmentBinding? = null
 

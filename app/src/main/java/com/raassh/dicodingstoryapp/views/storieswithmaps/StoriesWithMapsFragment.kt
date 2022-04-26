@@ -1,5 +1,6 @@
 package com.raassh.dicodingstoryapp.views.storieswithmaps
 
+import android.content.Context
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +20,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.raassh.dicodingstoryapp.R
+import com.raassh.dicodingstoryapp.data.api.ApiConfig
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
+import com.raassh.dicodingstoryapp.data.database.StoryDatabase
+import com.raassh.dicodingstoryapp.data.repository.StoryRepository
 import com.raassh.dicodingstoryapp.databinding.FragmentStoriesWithMapsBinding
 import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.visibility
@@ -28,7 +32,11 @@ class StoriesWithMapsFragment : Fragment() {
     private var token = ""
 
     private val viewModel by viewModels<StoriesWithMapViewModel> {
-        StoriesWithMapViewModel.Factory(getString(R.string.auth, token))
+        StoriesWithMapViewModel.Factory(StoryRepository(
+            StoryDatabase.getDatabase(context as Context),
+            ApiConfig.getApiService(),
+            getString(R.string.auth, token)
+        ))
     }
 
     private var binding: FragmentStoriesWithMapsBinding? = null

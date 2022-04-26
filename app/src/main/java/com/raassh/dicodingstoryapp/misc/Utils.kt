@@ -15,6 +15,9 @@ import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestListener
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.raassh.dicodingstoryapp.data.api.GenericResponse
+import okhttp3.ResponseBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -147,3 +150,9 @@ fun reduceFileImage(file: File, step: Int = 5): File {
 }
 
 fun Boolean?.isTrue() = this != null && this
+
+// ref: https://stackoverflow.com/a/62513959/18277301
+fun getErrorResponse(body: ResponseBody) = Gson().fromJson(
+    body.charStream(),
+    GenericResponse::class.java
+)

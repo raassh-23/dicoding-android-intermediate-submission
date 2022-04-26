@@ -13,6 +13,8 @@ import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.data.SessionPreferences
+import com.raassh.dicodingstoryapp.data.api.ApiConfig
+import com.raassh.dicodingstoryapp.data.repository.AuthRepository
 import com.raassh.dicodingstoryapp.databinding.LoginFragmentBinding
 import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
 import com.raassh.dicodingstoryapp.misc.showSnackbar
@@ -22,7 +24,11 @@ import com.raassh.dicodingstoryapp.views.dataStore
 import com.raassh.dicodingstoryapp.views.register.RegisterFragment
 
 class LoginFragment : Fragment() {
-    private val viewModel by viewModels<LoginViewModel>()
+    private val viewModel by viewModels<LoginViewModel>() {
+        LoginViewModel.Factory(AuthRepository(
+            ApiConfig.getApiService()
+        ))
+    }
     private val sharedViewModel by activityViewModels<SharedViewModel> {
         SharedViewModel.Factory(SessionPreferences.getInstance(context?.dataStore as DataStore))
     }

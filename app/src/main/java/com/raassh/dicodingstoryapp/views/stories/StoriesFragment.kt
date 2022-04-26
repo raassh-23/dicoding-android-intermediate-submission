@@ -3,6 +3,7 @@ package com.raassh.dicodingstoryapp.views.stories
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -25,9 +26,10 @@ import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.data.database.StoryDatabase
 import com.raassh.dicodingstoryapp.data.paging.ListStoriesAdapter
 import com.raassh.dicodingstoryapp.data.paging.LoadingStateAdapter
-import com.raassh.dicodingstoryapp.data.paging.StoryRepository
+import com.raassh.dicodingstoryapp.data.repository.StoryRepository
 import com.raassh.dicodingstoryapp.databinding.StoriesFragmentBinding
 import com.raassh.dicodingstoryapp.databinding.StoryItemBinding
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -36,11 +38,13 @@ class StoriesFragment : Fragment() {
     private var newStoryAdded = false
 
     private val viewModel by viewModels<StoriesViewModel> {
-        StoriesViewModel.Factory(StoryRepository(
-            StoryDatabase.getDatabase(context as Context),
-            ApiConfig.getApiService(),
-            getString(R.string.auth, token)
-        ))
+        StoriesViewModel.Factory(
+            StoryRepository(
+                StoryDatabase.getDatabase(context as Context),
+                ApiConfig.getApiService(),
+                getString(R.string.auth, token)
+            )
+        )
     }
 
     private var binding: StoriesFragmentBinding? = null

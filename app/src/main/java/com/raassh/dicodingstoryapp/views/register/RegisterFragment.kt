@@ -15,13 +15,19 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
+import com.raassh.dicodingstoryapp.data.api.ApiConfig
+import com.raassh.dicodingstoryapp.data.repository.AuthRepository
 import com.raassh.dicodingstoryapp.databinding.RegisterFragmentBinding
 import com.raassh.dicodingstoryapp.misc.hideSoftKeyboard
 import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.visibility
 
 class RegisterFragment : Fragment() {
-    private val viewModel by viewModels<RegisterViewModel>()
+    private val viewModel by viewModels<RegisterViewModel> {
+        RegisterViewModel.Factory(AuthRepository(
+            ApiConfig.getApiService()
+        ))
+    }
 
     private var binding: RegisterFragmentBinding? = null
 
@@ -94,7 +100,7 @@ class RegisterFragment : Fragment() {
                 }
             }
 
-            error.observe(viewLifecycleOwner) { it ->
+            error.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { message ->
                     binding?.root?.let { root ->
                         if (message.isEmpty()) {

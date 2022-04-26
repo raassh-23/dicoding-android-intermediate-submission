@@ -15,6 +15,8 @@ import com.raassh.dicodingstoryapp.views.dataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 internal class StoriesRemoteViewsFactory(private val context: Context) :
@@ -26,25 +28,22 @@ internal class StoriesRemoteViewsFactory(private val context: Context) :
     }
 
     override fun onDataSetChanged() {
-        var token = ""
         val pref = SessionPreferences.getInstance(context.dataStore)
-        CoroutineScope(Dispatchers.Main).launch {
-            pref.getSavedToken().collect {
-                token = it
-            }
-        }
+        CoroutineScope(Dispatchers.IO).launch {
+            pref.getSavedToken().collectLatest {
+                try {
+                    val auth = context.getString(R.string.auth, it)
+                    val listStories = ApiConfig.getApiService()
+                        .getAllStories(auth, 0).listStory
 
-        try {
-            val listStories = ApiConfig.getApiService()
-                .getAllStories(context.getString(R.string.auth, token))
-                .execute()
-                .body()
-                ?.listStory as List<ListStoryItem>
-            stories.clear()
-            stories.addAll(listStories)
-        } catch (e: Exception) {
-            Log.e(TAG, "onResponse: ${e.message}")
-            e.printStackTrace()
+                    stories.clear()
+                    stories.addAll(listStories)
+                    Log.d(TAG, "onDataSetChanged: $stories")
+                } catch (e: Exception) {
+                    Log.e(TAG, "onResponse: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
         }
     }
 

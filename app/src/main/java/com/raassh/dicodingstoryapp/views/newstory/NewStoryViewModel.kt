@@ -1,25 +1,21 @@
 package com.raassh.dicodingstoryapp.views.newstory
 
 import android.location.Location
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.google.gson.Gson
-import com.raassh.dicodingstoryapp.data.api.ApiConfig
+import androidx.lifecycle.*
 import com.raassh.dicodingstoryapp.data.api.ApiService
-import com.raassh.dicodingstoryapp.data.api.GenericResponse
+import com.raassh.dicodingstoryapp.data.repository.StoryRepository
 import com.raassh.dicodingstoryapp.misc.Event
+import com.raassh.dicodingstoryapp.misc.getErrorResponse
 import com.raassh.dicodingstoryapp.misc.reduceFileImage
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import retrofit2.HttpException
 import java.io.File
 
-class NewStoryViewModel : ViewModel() {
+class NewStoryViewModel(private val storyRepository: StoryRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -54,36 +50,28 @@ class NewStoryViewModel : ViewModel() {
         }
 
         _isLoading.value = true
-        ApiConfig.getApiService().addStory(imageMultiPart, HashMap(params), auth)
-            .enqueue(object : Callback<GenericResponse> {
-                override fun onResponse(
-                    call: Call<GenericResponse>,
-                    response: Response<GenericResponse>
-                ) {
-                    _isLoading.value = false
+        viewModelScope.launch {
+            try {
+                _isSuccess.value = Event(storyRepository.addNewStory(imageMultiPart, HashMap(params), auth))
+            } catch (httpEx: HttpException) {
+                httpEx.response()?.errorBody()?.let {
+                    val errorResponse = getErrorResponse(it)
 
-                    if (response.isSuccessful) {
-                        _isSuccess.value = Event(true)
-                    } else {
-                        val errorBody = response.errorBody()
-
-                        if (errorBody != null) {
-                            val errorResponse = Gson().fromJson(
-                                errorBody.charStream(),
-                                GenericResponse::class.java
-                            )
-
-                            _error.value = Event(errorResponse.message)
-                        } else {
-                            _error.value = Event("")
-                        }
-                    }
+                    _error.value = Event(errorResponse.message)
                 }
+            } catch (genericEx: Exception) {
+                _error.value = Event(genericEx.localizedMessage ?: "")
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 
-                override fun onFailure(call: Call<GenericResponse>, t: Throwable) {
-                    _isLoading.value = false
-                    _error.value = Event(t.message.toString())
-                }
-            })
+    @Suppress("UNCHECKED_CAST")
+    class Factory(private val storyRepository: StoryRepository) :
+        ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return NewStoryViewModel(storyRepository) as T
+        }
     }
 }

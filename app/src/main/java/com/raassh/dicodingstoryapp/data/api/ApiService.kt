@@ -8,24 +8,24 @@ import retrofit2.http.*
 interface ApiService {
     @FormUrlEncoded
     @POST("register")
-    fun register(
+    suspend fun register(
         @Field("name") name: String,
         @Field("email") email: String,
         @Field("password") password: String
-    ): Call<GenericResponse>
+    ): GenericResponse
 
     @FormUrlEncoded
     @POST("login")
-    fun login(
+    suspend fun login(
         @Field("email") email: String,
         @Field("password") password: String
-    ): Call<LoginResponse>
+    ): LoginResponse
 
     @GET("stories")
-    fun getAllStories(
+    suspend fun getAllStories(
         @Header("Authorization") token: String,
         @Query("location") location: Int = 1
-    ): Call<StoriesResponse>
+    ): StoriesResponse
 
     @GET("stories")
     suspend fun getAllStoriesPaged(
@@ -36,11 +36,11 @@ interface ApiService {
 
     @Multipart
     @POST("stories")
-    fun addStory(
+    suspend fun addStory(
         @Part file: MultipartBody.Part,
         @PartMap params: HashMap<String, RequestBody>,
         @Header("Authorization") auth: String
-    ): Call<GenericResponse>
+    ): GenericResponse
 
     companion object {
         const val PHOTO_FIELD = "photo"

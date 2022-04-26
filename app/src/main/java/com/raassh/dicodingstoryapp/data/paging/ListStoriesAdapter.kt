@@ -1,6 +1,7 @@
 package com.raassh.dicodingstoryapp.data.paging
 
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingData
@@ -16,6 +17,7 @@ import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.StoryItemBinding
 import com.raassh.dicodingstoryapp.misc.loadImage
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ListStoriesAdapter :
@@ -82,6 +84,10 @@ class ListStoriesAdapter :
 
     suspend fun submitDataWithCallback(data: PagingData<ListStoryItem>, callback: () -> Unit) {
         submitData(data)
+
+        // really hacky, but without this sometimes the callback is called too fast
+        delay(200)
+
         callback.invoke()
     }
 

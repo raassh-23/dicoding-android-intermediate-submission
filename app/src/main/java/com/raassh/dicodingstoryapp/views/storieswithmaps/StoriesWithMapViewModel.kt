@@ -1,20 +1,16 @@
 package com.raassh.dicodingstoryapp.views.storieswithmaps
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.google.gson.Gson
-import com.raassh.dicodingstoryapp.data.api.ApiConfig
 import com.raassh.dicodingstoryapp.data.api.GenericResponse
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
-import com.raassh.dicodingstoryapp.data.api.StoriesResponse
+import com.raassh.dicodingstoryapp.data.repository.StoryRepository
 import com.raassh.dicodingstoryapp.misc.Event
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.raassh.dicodingstoryapp.misc.getErrorResponse
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
-class StoriesWithMapViewModel(private val auth: String) : ViewModel() {
+class StoriesWithMapViewModel(private val storyRepository: StoryRepository) : ViewModel() {
     private val _stories = MutableLiveData<List<ListStoryItem>>()
     val stories: LiveData<List<ListStoryItem>> = _stories
 
@@ -31,44 +27,28 @@ class StoriesWithMapViewModel(private val auth: String) : ViewModel() {
     fun getAllStories() {
         _isLoading.value = true
 
-        ApiConfig.getApiService().getAllStories(auth)
-            .enqueue(object : Callback<StoriesResponse> {
-                override fun onResponse(
-                    call: Call<StoriesResponse>,
-                    response: Response<StoriesResponse>
-                ) {
-                    _isLoading.value = false
+        viewModelScope.launch {
+            try {
+                _stories.value = storyRepository.getStoriesWithLocation()
+            } catch (httpEx: HttpException) {
+                httpEx.response()?.errorBody()?.let {
+                    val errorResponse = getErrorResponse(it)
 
-                    if (response.isSuccessful) {
-                        _stories.value = response.body()?.listStory
-                    } else {
-                        val errorBody = response.errorBody()
-
-                        if (errorBody != null) {
-                            val errorResponse = Gson().fromJson(
-                                errorBody.charStream(),
-                                GenericResponse::class.java
-                            )
-
-                            _error.value = Event(errorResponse.message)
-                        } else {
-                            _error.value = Event("")
-                        }
-                    }
+                    _error.value = Event(errorResponse.message)
                 }
-
-                override fun onFailure(call: Call<StoriesResponse>, t: Throwable) {
-                    _isLoading.value = false
-                    _error.value = Event(t.message.toString())
-                }
-            })
+            } catch (ex: Exception) {
+                _error.value = Event(ex.localizedMessage ?: "")
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val auth: String) :
+    class Factory(private val storyRepository: StoryRepository) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return StoriesWithMapViewModel(auth) as T
+            return StoriesWithMapViewModel(storyRepository) as T
         }
     }
 }
