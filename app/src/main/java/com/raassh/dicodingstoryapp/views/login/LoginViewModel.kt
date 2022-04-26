@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.raassh.dicodingstoryapp.data.api.ApiConfig
 import com.raassh.dicodingstoryapp.data.api.GenericResponse
 import com.raassh.dicodingstoryapp.data.api.LoginResponse
+import com.raassh.dicodingstoryapp.misc.EspressoIdlingResource
 import com.raassh.dicodingstoryapp.misc.Event
 import retrofit2.Call
 import retrofit2.Callback
@@ -24,9 +25,12 @@ class LoginViewModel : ViewModel() {
 
     fun login(email: String, password: String) {
         _isLoading.value = true
+        EspressoIdlingResource.increment()
+
         ApiConfig.getApiService().login(email, password).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 _isLoading.value = false
+                EspressoIdlingResource.decrement()
 
                 if (response.isSuccessful) {
                     val token = response.body()?.loginResult?.token ?: ""
@@ -49,6 +53,7 @@ class LoginViewModel : ViewModel() {
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 _isLoading.value = false
+                EspressoIdlingResource.decrement()
                 _error.value = Event(t.message.toString())
             }
         })

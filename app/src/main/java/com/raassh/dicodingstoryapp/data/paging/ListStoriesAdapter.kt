@@ -3,6 +3,7 @@ package com.raassh.dicodingstoryapp.data.paging
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,8 @@ import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.databinding.StoryItemBinding
 import com.raassh.dicodingstoryapp.misc.loadImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class ListStoriesAdapter :
     PagingDataAdapter<ListStoryItem, ListStoriesAdapter.ViewHolder>(StoryComparator()) {
@@ -69,11 +72,17 @@ class ListStoriesAdapter :
 
                 storyImage.transitionName =
                     holder.itemView.context.getString(R.string.story_image, story.id)
-                storyUser.text = holder.itemView.context.getString(R.string.stories_user, story.name)
+                storyUser.text =
+                    holder.itemView.context.getString(R.string.stories_user, story.name)
                 storyUser.transitionName =
                     holder.itemView.context.getString(R.string.story_user, story.id)
             }
         }
+    }
+
+    suspend fun submitDataWithCallback(data: PagingData<ListStoryItem>, callback: () -> Unit) {
+        submitData(data)
+        callback.invoke()
     }
 
     class StoryComparator : DiffUtil.ItemCallback<ListStoryItem>() {

@@ -16,11 +16,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.data.api.ApiConfig
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
@@ -30,12 +28,6 @@ import com.raassh.dicodingstoryapp.data.paging.LoadingStateAdapter
 import com.raassh.dicodingstoryapp.data.paging.StoryRepository
 import com.raassh.dicodingstoryapp.databinding.StoriesFragmentBinding
 import com.raassh.dicodingstoryapp.databinding.StoryItemBinding
-import com.raassh.dicodingstoryapp.misc.isTrue
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 
@@ -114,8 +106,6 @@ class StoriesFragment : Fragment() {
                     )
                 }
             })
-
-            stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
 
         binding?.apply {
@@ -145,19 +135,17 @@ class StoriesFragment : Fragment() {
             postponeEnterTransition()
 
             binding?.apply {
-                listStoriesAdapter.submitData(viewLifecycleOwner.lifecycle, it)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    listStoriesAdapter.submitDataWithCallback(it) {
+                        if (newStoryAdded) {
+                            newStoryAdded = false
+                            binding?.listStory?.scrollToPosition(0)
+                        }
+                    }
+                }
 
                 (view.parent as? ViewGroup)?.doOnPreDraw {
                     startPostponedEnterTransition()
-                }
-
-                // really hacky, but i can't find another working method
-                viewLifecycleOwner.lifecycleScope.launch {
-                    delay(500)
-                    if (newStoryAdded) {
-                        newStoryAdded = false
-                        binding?.listStory?.scrollToPosition(0)
-                    }
                 }
             }
         }
