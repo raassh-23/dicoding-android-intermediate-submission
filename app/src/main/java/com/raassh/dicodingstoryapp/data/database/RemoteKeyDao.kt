@@ -1,6 +1,5 @@
 package com.raassh.dicodingstoryapp.data.database
 
-import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy

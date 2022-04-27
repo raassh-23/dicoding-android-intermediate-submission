@@ -8,12 +8,9 @@ import com.raassh.dicodingstoryapp.MainCoroutineRule
 import com.raassh.dicodingstoryapp.createErrorResponse
 import com.raassh.dicodingstoryapp.data.repository.StoryRepository
 import com.raassh.dicodingstoryapp.getOrAwaitValue
-import com.raassh.dicodingstoryapp.views.stories.StoriesViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert
-import org.junit.Assert.*
-
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

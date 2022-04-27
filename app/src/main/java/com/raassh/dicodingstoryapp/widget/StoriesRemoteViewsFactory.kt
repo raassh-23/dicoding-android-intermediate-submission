@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 internal class StoriesRemoteViewsFactory(private val context: Context) :
     RemoteViewsService.RemoteViewsFactory {
@@ -27,23 +28,17 @@ internal class StoriesRemoteViewsFactory(private val context: Context) :
         //
     }
 
-    override fun onDataSetChanged() {
+    override fun onDataSetChanged(): Unit = runBlocking {
         val pref = SessionPreferences.getInstance(context.dataStore)
-        CoroutineScope(Dispatchers.IO).launch {
-            pref.getSavedToken().collectLatest {
-                try {
-                    val auth = context.getString(R.string.auth, it)
-                    val listStories = ApiConfig.getApiService()
-                        .getAllStories(auth, 0).listStory
+        val auth = context.getString(R.string.auth, pref.getSavedToken().first())
 
-                    stories.clear()
-                    stories.addAll(listStories)
-                    Log.d(TAG, "onDataSetChanged: $stories")
-                } catch (e: Exception) {
-                    Log.e(TAG, "onResponse: ${e.message}")
-                    e.printStackTrace()
-                }
-            }
+        try {
+            stories.clear()
+            stories.addAll(ApiConfig.getApiService()
+                .getAllStories(auth, 0).listStory)
+        } catch (e: Exception) {
+            Log.e(TAG, "onResponse: ${e.message}")
+            e.printStackTrace()
         }
     }
 

@@ -1,8 +1,6 @@
 package com.raassh.dicodingstoryapp.views.storieswithmaps
 
 import androidx.lifecycle.*
-import com.google.gson.Gson
-import com.raassh.dicodingstoryapp.data.api.GenericResponse
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.data.repository.StoryRepository
 import com.raassh.dicodingstoryapp.misc.Event

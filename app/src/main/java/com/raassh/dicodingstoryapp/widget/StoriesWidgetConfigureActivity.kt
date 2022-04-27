@@ -7,11 +7,11 @@ import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.findNavController
 import com.raassh.dicodingstoryapp.R
 import com.raassh.dicodingstoryapp.customviews.EditTextWithValidation
 import com.raassh.dicodingstoryapp.data.SessionPreferences
+import com.raassh.dicodingstoryapp.data.api.ApiConfig
+import com.raassh.dicodingstoryapp.data.repository.AuthRepository
 import com.raassh.dicodingstoryapp.databinding.StoriesWidgetConfigureBinding
 import com.raassh.dicodingstoryapp.misc.showSnackbar
 import com.raassh.dicodingstoryapp.misc.visibility
@@ -25,7 +25,13 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
     private val sharedViewModel by viewModels<SharedViewModel> {
         SharedViewModel.Factory(SessionPreferences.getInstance(dataStore))
     }
-    private val loginViewModel by viewModels<LoginViewModel>()
+    private val loginViewModel by viewModels<LoginViewModel> {
+        LoginViewModel.Factory(
+            AuthRepository(
+                ApiConfig.getApiService()
+            )
+        )
+    }
 
     public override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)

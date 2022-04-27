@@ -3,13 +3,9 @@
 package com.raassh.dicodingstoryapp.views.stories
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.AsyncPagingDataDiffer
 import androidx.paging.PagingData
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
-import androidx.recyclerview.widget.ListUpdateCallback
 import com.raassh.dicodingstoryapp.*
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.data.paging.ListStoriesAdapter

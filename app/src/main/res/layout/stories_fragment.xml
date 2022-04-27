@@ -90,6 +90,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:text="@string/story_list_is_empty"
+        android:visibility="invisible"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

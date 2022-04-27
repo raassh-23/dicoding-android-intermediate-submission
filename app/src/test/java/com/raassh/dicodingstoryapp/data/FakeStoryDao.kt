@@ -2,7 +2,6 @@ package com.raassh.dicodingstoryapp.data
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.raassh.dicodingstoryapp.Dummy
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.data.database.StoryDao
 
@@ -18,8 +17,6 @@ class FakeStoryDao : StoryDao {
     override suspend fun deleteAllStories() {
         stories.clear()
     }
-
-    override suspend fun getStoriesCount() = stories.size
 }
 
 class FakePagingSource(private val data: List<ListStoryItem>) : PagingSource<Int, ListStoryItem>() {
