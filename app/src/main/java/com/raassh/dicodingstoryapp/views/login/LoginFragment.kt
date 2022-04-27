@@ -24,7 +24,7 @@ import com.raassh.dicodingstoryapp.views.dataStore
 import com.raassh.dicodingstoryapp.views.register.RegisterFragment
 
 class LoginFragment : Fragment() {
-    private val viewModel by viewModels<LoginViewModel>() {
+    private val viewModel by viewModels<LoginViewModel> {
         LoginViewModel.Factory(AuthRepository(
             ApiConfig.getApiService()
         ))

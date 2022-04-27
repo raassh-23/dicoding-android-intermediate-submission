@@ -35,7 +35,6 @@ class NewStoryViewModelTest {
 
     private val image = File("test")
     private val desc = "desc tes"
-    private val auth = "Bearer test123"
 
     @Mock
     private lateinit var location: Location

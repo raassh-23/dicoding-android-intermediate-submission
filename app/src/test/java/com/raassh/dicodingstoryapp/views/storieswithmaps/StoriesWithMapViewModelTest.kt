@@ -32,8 +32,6 @@ class StoriesWithMapViewModelTest {
     private lateinit var storyRepository: StoryRepository
     private lateinit var storiesWithMapViewModel: StoriesWithMapViewModel
 
-    private val auth = "Bearer test123"
-
     @Before
     fun setUp() {
         storiesWithMapViewModel = StoriesWithMapViewModel(storyRepository)
