@@ -12,12 +12,7 @@ import com.raassh.dicodingstoryapp.data.SessionPreferences
 import com.raassh.dicodingstoryapp.data.api.ApiConfig
 import com.raassh.dicodingstoryapp.data.api.ListStoryItem
 import com.raassh.dicodingstoryapp.views.dataStore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 internal class StoriesRemoteViewsFactory(private val context: Context) :
